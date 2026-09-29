@@ -22,7 +22,7 @@ const {
 } = Astro.props;
 
 import { siteConfig } from '../data/siteConfig';
-const { businessName, domain, phone } = siteConfig;
+const { businessName, domain, phone, phoneClean } = siteConfig;
 const fullCanonical = canonicalUrl ? `${domain}${canonicalUrl}` : domain;
 const currentYear = new Date().getFullYear();
 ---
@@ -88,6 +88,17 @@ const currentYear = new Date().getFullYear();
     <slot />
   </main>
   <Footer />
+
+  <!-- Mobile Sticky Emergency Call Button (Visible on mobile screens) -->
+  <div class="mobile-sticky-cta" aria-label="Call Dispatcher">
+    <a href={`tel:${phoneClean}`} class="mobile-cta-btn">
+      <span class="mobile-cta-icon">📞</span>
+      <span class="mobile-cta-text">
+        <strong>Call 24/7 Dispatch</strong>
+        <small>{phone}</small>
+      </span>
+    </a>
+  </div>
 
   <!-- Scroll Reveal Animation -->
   <script>

@@ -2010,6 +2010,76 @@ textarea.form-input {
 }
 
 /* ============================================================
+   MOBILE STICKY CALL BAR (High-Converting Mobile CTA)
+   ============================================================ */
+.mobile-sticky-cta {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-sticky-cta {
+    display: block;
+    position: fixed;
+    bottom: 0.85rem;
+    left: 1rem;
+    right: 1rem;
+    z-index: 999;
+    max-width: 420px;
+    margin-inline: auto;
+  }
+
+  .mobile-cta-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    background: linear-gradient(135deg, #E65100 0%, #FF6F00 100%);
+    color: #ffffff !important;
+    text-decoration: none;
+    padding: 0.85rem 1.25rem;
+    border-radius: 9999px;
+    font-weight: 700;
+    box-shadow: 0 10px 25px rgba(230, 81, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.25);
+    border: 1.5px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(8px);
+    transition: transform 0.15s ease;
+  }
+
+  .mobile-cta-btn:active {
+    transform: scale(0.97);
+  }
+
+  .mobile-cta-icon {
+    font-size: 1.35rem;
+    line-height: 1;
+  }
+
+  .mobile-cta-text {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    line-height: 1.2;
+  }
+
+  .mobile-cta-text strong {
+    font-size: 0.95rem;
+    color: #ffffff;
+    letter-spacing: -0.01em;
+  }
+
+  .mobile-cta-text small {
+    font-size: 0.8125rem;
+    color: #ffedd5;
+    font-weight: 600;
+  }
+
+  body {
+    padding-bottom: 80px;
+  }
+}
+
+
+/* ============================================================
    ANIMATIONS
    ============================================================ */
 @keyframes fadeInUp {
