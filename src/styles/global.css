@@ -81,6 +81,9 @@ html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
   font-size: 16px;
+  overflow-x: hidden;
+  max-width: 100%;
+  width: 100%;
 }
 
 body {
@@ -91,6 +94,9 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  max-width: 100%;
+  width: 100%;
+  position: relative;
 }
 
 img {
@@ -292,6 +298,22 @@ p {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-md);
+}
+
+@media (max-width: 640px) {
+  .btn-group {
+    flex-direction: column;
+    width: 100%;
+    gap: var(--space-sm);
+  }
+
+  .btn {
+    width: 100%;
+    white-space: normal;
+    text-align: center;
+    padding: 0.85em 1.25em;
+    font-size: 1rem !important;
+  }
 }
 
 /* — Cards — */
@@ -560,23 +582,31 @@ p {
   }
 
   .main-nav {
+    display: none;
     position: fixed;
     top: 0;
-    right: -100%;
-    width: 300px;
+    right: 0;
+    width: min(320px, 85vw);
     height: 100vh;
+    height: 100dvh;
     background: var(--color-white);
     flex-direction: column;
     align-items: stretch;
     padding: calc(var(--header-height) + var(--space-lg)) var(--space-lg) var(--space-lg);
     box-shadow: var(--shadow-xl);
-    transition: right var(--transition-slow);
     overflow-y: auto;
     gap: var(--space-xs);
+    z-index: 1001;
   }
 
   .main-nav.open {
-    right: 0;
+    display: flex;
+    animation: drawerSlideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes drawerSlideIn {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
   }
 
   .nav-dropdown {
