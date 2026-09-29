@@ -41,7 +41,6 @@ ${urlsXml}
   return new Response(sitemapXml, {
     headers: {
       'Content-Type': 'application/xml; charset=utf-8',
-      'X-Robots-Tag': 'noindex',
     },
   });
 };
