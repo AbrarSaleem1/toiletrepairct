@@ -1,0 +1,332 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import TrustStrip from '../components/TrustStrip.astro';
+import ProcessSteps from '../components/ProcessSteps.astro';
+import Testimonials from '../components/Testimonials.astro';
+import FAQ from '../components/FAQ.astro';
+import CTABand from '../components/CTABand.astro';
+import ContactSection from '../components/ContactSection.astro';
+import ServiceAreaMap from '../components/ServiceAreaMap.astro';
+import { siteConfig, services, cities, generalFaqs } from '../data/siteConfig';
+
+const { businessName, phone, phoneClean, address, primaryKeyword, experienceYears } = siteConfig;
+const state = address.state;
+
+// STRICT SEO LIMITS: Title <= 70 chars, Description <= 160 chars
+const pageTitle = `Toilet Repair in Connecticut | 24/7 CT Toilet Repair Co.`;
+const pageDescription = `Fast 24/7 toilet repair across Connecticut. CT Toilet Repair Co. handles urgent unclogging, leak repairs, and valve replacement. Call (844) 352-0779.`;
+
+// LocalBusiness schema with 24/7 hours and full CT coverage
+const localBusinessSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "PlumbingService",
+  "name": businessName,
+  "url": siteConfig.domain,
+  "telephone": phone,
+  "email": siteConfig.email,
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": address.street,
+    "addressLocality": address.city,
+    "addressRegion": address.stateAbbr,
+    "postalCode": address.zip,
+    "addressCountry": "US",
+  },
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+      "opens": "00:00",
+      "closes": "23:59"
+    }
+  ],
+  "areaServed": {
+    "@type": "State",
+    "name": state,
+  },
+  "priceRange": "$$",
+});
+
+const whyChooseUs = [
+  { icon: '🏆', title: 'Licensed CT Plumbers', desc: `Every technician on our crew carries full Connecticut trade licensing, continuous safety credentials, and ${experienceYears} years of proven expertise.` },
+  { icon: '💰', title: 'Transparent Upfront Pricing', desc: 'You receive a complete, written flat-rate quote before any tool touches your toilet. No surprise travel fees, no hidden add-ons.' },
+  { icon: '⚡', title: '24/7 Rapid Emergency Dispatch', desc: 'Active toilet overflows and sewer backups cannot wait. We dispatch licensed technicians immediately, arriving in under an hour in most areas.' },
+  { icon: '🔒', title: 'Fully Insured & Bonded', desc: "We carry comprehensive general liability and workers' compensation coverage to protect your residential or commercial property." },
+  { icon: '📋', title: 'Guaranteed Workmanship', desc: 'All replacements, flanges, valves, and seal installations come backed by our written warranty. If it leaks, we come back and fix it free.' },
+  { icon: '🌟', title: 'Statewide Local Experience', desc: `We know Connecticut homes—from vintage cast iron pipes in historic towns to modern commercial flushometer systems in corporate offices.` },
+];
+
+const commonProblems = [
+  { icon: '🚨', title: 'Emergency Toilet Overflows', desc: 'Immediate emergency shutoff and motorized snaking when raw water is threatening your bathroom flooring and ceilings.' },
+  { icon: '🔄', title: 'Constantly Running Toilets', desc: 'Defective flapper assemblies, damaged fill valves, or uncalibrated floats wasting hundreds of gallons of clean water.' },
+  { icon: '💧', title: 'Base Leaks & Rotten Flanges', desc: 'Water seeping around the bottom edge indicating broken closet bolts, fractured wax seals, or cracked subflooring.' },
+  { icon: '⚙️', title: 'Weak or Incomplete Flushing', desc: 'Mineral clogged siphon jets, low bowl water levels, or worn flush levers failing to clear waste in a single flush.' },
+];
+
+// Show top 24 major Connecticut communities on homepage
+const featuredCities = cities.slice(0, 24);
+---
+
+<BaseLayout title={pageTitle} description={pageDescription} canonicalUrl="/" schema={localBusinessSchema}>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="hero-bg">
+      <div style="width:100%;height:100%;background:linear-gradient(135deg, #052B3B 0%, #0A4D68 50%, #0F172A 100%);"></div>
+    </div>
+    <div class="hero-overlay" style="background: linear-gradient(135deg, rgba(5,43,59,0.7) 0%, rgba(10,77,104,0.5) 50%, rgba(15,23,42,0.7) 100%);"></div>
+    <div class="container">
+      <div class="hero-grid fade-in-up">
+        <div class="hero-content">
+          <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(230, 81, 0, 0.25); border: 1px solid var(--color-accent); padding: 0.4rem 0.9rem; border-radius: 9999px; margin-bottom: var(--space-md);">
+            <span style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #22c55e;"></span>
+            <span style="font-size: 0.85rem; font-weight: 700; color: #ffedd5; text-transform: uppercase; letter-spacing: 0.05em;">24/7 Statewide Emergency Response</span>
+          </div>
+          <h1>Same-Day Toilet Repair & Unclogging in <span class="highlight">Connecticut</span></h1>
+          <p class="hero-subtitle">
+            {businessName} provides homeowners and commercial property managers across Connecticut with emergency toilet repair specialists who arrive with fully stocked trucks to diagnose leaking wax rings, faulty fill valves, broken closet flanges, or severe clogged drains on the first visit. We provide 24/7 emergency response — same-day toilet repair, transparent flat-rate pricing, and guaranteed leak-free performance.
+          </p>
+          <div class="btn-group">
+            <a href={`tel:${phoneClean}`} class="btn btn-accent btn-lg" style="font-size: 1.25rem; font-weight: 700; box-shadow: 0 10px 25px rgba(230,81,0,0.4);">
+              📞 Call 24/7: {phone}
+            </a>
+            <a href="/locations/" class="btn btn-white btn-lg">
+              View All 208 CT Cities
+            </a>
+          </div>
+          <div class="hero-badges">
+            <span class="hero-badge">✅ Licensed & Insured Plumbers</span>
+            <span class="hero-badge">⭐ 15+ Years Trade Experience</span>
+            <span class="hero-badge">⏰ 24/7 Emergency Dispatch</span>
+            <span class="hero-badge">💵 Upfront Flat-Rate Quotes</span>
+          </div>
+        </div>
+
+        <!-- Hero Media Card (Furnace Repair Pros style) -->
+        <div class="hero-media">
+          <div class="hero-card-frame">
+            <img 
+              src="/images/toilet-flange-wax-ring-repair.jpg" 
+              alt="Professional licensed toilet repair and flange hardware in Connecticut" 
+              width="900" 
+              height="650" 
+              class="hero-main-img" 
+              loading="eager" 
+              decoding="async"
+            />
+            <div class="hero-same-day-badge">
+              <span>⚡</span>
+              <span>Same-Day Service Across All 208 CT Towns</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TRUST STRIP ============ -->
+  <TrustStrip items={[
+    { icon: '🛡️', label: 'Licensed & Insured Plumbers' },
+    { icon: '⭐', label: '15+ Years Trade Experience' },
+    { icon: '⏰', label: '24/7 Emergency Response' },
+    { icon: '💵', label: 'Upfront Flat-Rate Pricing' },
+  ]} />
+
+  <!-- ============ SERVICES SECTION ============ -->
+  <section class="section" id="services">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-label">Our Solutions</span>
+        <h2>Professional Toilet Repair Services Across Connecticut</h2>
+        <p>From midnight emergency overflows to wobbly toilet flanges, our fully licensed plumbers arrive prepared with complete replacement assemblies.</p>
+      </div>
+
+      <div class="services-grid">
+        {services.map(service => (
+          <a href={`/services/${service.slug}/`} class="card service-card reveal" style="text-decoration:none;">
+            <div class="card-icon">{service.icon}</div>
+            <h3>{service.name}</h3>
+            <p>{service.shortDescription}</p>
+            <span class="card-link">
+              Explore Service Details <span aria-hidden="true">→</span>
+            </span>
+          </a>
+        ))}
+      </div>
+
+      <div style="text-align:center; margin-top: var(--space-2xl);">
+        <a href="/services/" class="btn btn-outline">Explore All 7 Services</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CITIES WE SERVE ============ -->
+  <section class="section section-alt" id="locations">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-label">Statewide Coverage</span>
+        <h2>Serving All 208 Cities & Towns in Connecticut</h2>
+        <p>We maintain regional service trucks stationed throughout Connecticut for fast on-site arrival. Select your town below or view the complete directory.</p>
+      </div>
+
+      <div class="cities-grid">
+        {featuredCities.map(city => (
+          <a href={`/locations/${city.slug}/`} class="city-card reveal">
+            <h3>{city.name}, CT</h3>
+            <p>24/7 Toilet Repair</p>
+          </a>
+        ))}
+      </div>
+
+      <div style="text-align:center; margin-top: var(--space-2xl);">
+        <a href="/locations/" class="btn btn-primary btn-lg">
+          Browse Complete Directory of 208 Towns →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ COVERAGE MAP ============ -->
+  <ServiceAreaMap />
+
+  <!-- ============ ABOUT SUMMARY ============ -->
+  <section class="section" id="about-summary">
+    <div class="container">
+      <div class="about-story reveal">
+        <div>
+          <span class="section-label">About Our Company</span>
+          <h2>Connecticut's Dedicated Toilet Repair Specialists</h2>
+          <p>
+            {businessName} has spent over 15 years resolving the toughest residential and commercial toilet issues across Connecticut. Unlike general handymen who guess, our master plumbers specialize specifically in toilet mechanisms, wax seal geometry, and pressure diagnostics.
+          </p>
+          <p>
+            Whether you are dealing with a historic home in Litchfield County or a high-traffic commercial restroom in downtown Stamford or Hartford, we arrive with stocked mobile workshops ready to complete repairs in one single visit.
+          </p>
+          <a href="/about-us/" class="btn btn-primary" style="margin-top: var(--space-md);">
+            Read Our Full Company Story
+          </a>
+        </div>
+        <div class="about-image" style="border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.12); border: 1px solid var(--color-border); background: var(--color-bg);">
+          <img 
+            src="/images/toilet-tank-fill-valve-replacement.jpg" 
+            alt="Licensed toilet repair, fill valve replacement, and flapper rebuild in Connecticut" 
+            width="600" 
+            height="400" 
+            loading="lazy" 
+            decoding="async" 
+            style="width: 100%; height: 100%; min-height: 280px; object-fit: cover; display: block;"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CERTIFICATIONS & CREDENTIALS ============ -->
+  <div class="certs-banner">
+    <div class="container">
+      <div class="certs-inner">
+        <div class="cert-item"><span>🏅</span> CT Licensed Plumbers</div>
+        <div class="cert-item"><span>🛡️</span> Fully Insured & Bonded</div>
+        <div class="cert-item"><span>⏰</span> 24/7 Emergency Dispatch</div>
+        <div class="cert-item"><span>🔧</span> Commercial & Residential</div>
+        <div class="cert-item"><span>💵</span> Guaranteed Upfront Rates</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ WHY CHOOSE US ============ -->
+  <section class="section" id="why-choose-us">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-label">Why Choose Us</span>
+        <h2>Why Connecticut Property Owners Rely on Our Plumbers</h2>
+        <p>Reliable communication, prompt arrival, and permanent repair solutions.</p>
+      </div>
+
+      <div class="why-grid">
+        {whyChooseUs.map(item => (
+          <div class="why-item reveal">
+            <div class="why-icon">{item.icon}</div>
+            <h3>{item.title}</h3>
+            <p>{item.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PRICING TRANSPARENCY ============ -->
+  <section class="section section-alt" id="pricing">
+    <div class="container">
+      <div class="pricing-box reveal">
+        <div class="pricing-badge">💵 Upfront Flat-Rate Pricing</div>
+        <h2>Clear Quotes Before Any Work Begins</h2>
+        <p style="max-width: 650px; margin-inline: auto; color: var(--color-text-light); font-size: 1.05rem;">
+          We believe in honest, predictable pricing. Our technician evaluates your toilet issue in person and presents an exact flat-rate quote before performing any repair.
+        </p>
+        <div class="pricing-features">
+          <div class="pricing-feature">
+            <span style="color: var(--color-success); font-weight: 700;">✓</span>
+            <span>Upfront Written Flat Rates</span>
+          </div>
+          <div class="pricing-feature">
+            <span style="color: var(--color-success); font-weight: 700;">✓</span>
+            <span>No Hidden Mileage or Dispatch Fees</span>
+          </div>
+          <div class="pricing-feature">
+            <span style="color: var(--color-success); font-weight: 700;">✓</span>
+            <span>Written Workmanship Warranty</span>
+          </div>
+          <div class="pricing-feature">
+            <span style="color: var(--color-success); font-weight: 700;">✓</span>
+            <span>Residential & Commercial Invoicing</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ OUR PROCESS ============ -->
+  <ProcessSteps />
+
+  <!-- ============ COMMON PROBLEMS ============ -->
+  <section class="section section-alt" id="common-problems">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-label">Common Issues</span>
+        <h2>Toilet Problems We Fix Every Day in Connecticut</h2>
+        <p>No matter the brand or vintage of your toilet, our technicians have the replacement parts on their trucks.</p>
+      </div>
+
+      <div class="problems-grid">
+        {commonProblems.map(problem => (
+          <div class="problem-item reveal">
+            <div class="problem-icon">{problem.icon}</div>
+            <div>
+              <h4>{problem.title}</h4>
+              <p>{problem.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TESTIMONIALS ============ -->
+  <Testimonials />
+
+  <!-- ============ FAQ ============ -->
+  <FAQ faqs={generalFaqs} subtitle="Answers to common questions about our Connecticut toilet repair services." />
+
+  <!-- ============ CTA BAND ============ -->
+  <CTABand
+    title="Need 24/7 Toilet Repair in Connecticut?"
+    subtitle="Speak directly with an on-duty technician right now. Upfront pricing and prompt local dispatch."
+    primaryCta={{ text: `📞 Call 24/7: ${phone}`, href: `tel:${phoneClean}` }}
+    secondaryCta={{ text: "View All 208 CT Cities", href: "/locations/" }}
+  />
+
+  <!-- ============ CONTACT + MAP ============ -->
+  <ContactSection />
+
+</BaseLayout>

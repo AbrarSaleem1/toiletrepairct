@@ -1,0 +1,53 @@
+---
+interface Props {
+  badge?: string;
+  title?: string;
+  subtitle?: string;
+  query?: string;
+  zoom?: number;
+  id?: string;
+}
+
+const {
+  badge = "Coverage Map",
+  title = "Our Service Area",
+  subtitle = "24/7 licensed toilet repair and emergency plumbing dispatch covering all 208 cities and towns across Connecticut.",
+  query = "Connecticut, USA",
+  zoom = 8,
+  id = "coverage-map"
+} = Astro.props;
+
+const mapUrl = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&t=&z=${zoom}&ie=UTF8&iwloc=&output=embed`;
+---
+
+<section class="section map-section" id={id}>
+  <div class="container">
+    <div class="section-header reveal text-center" style="text-align: center;">
+      <span class="section-label" style="display: inline-flex; align-items: center; gap: 0.4rem;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+        </svg>
+        {badge}
+      </span>
+      <h2>{title}</h2>
+      {subtitle && (
+        <p style="max-width: 680px; margin-inline: auto; color: var(--color-text-light); font-size: 1.05rem;">
+          {subtitle}
+        </p>
+      )}
+    </div>
+
+    <div class="area-map reveal">
+      <iframe
+        src={mapUrl}
+        width="100%"
+        height="100%"
+        style="border:0;"
+        allowfullscreen=""
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        title={`Toilet repair service area map for ${query}`}
+      ></iframe>
+    </div>
+  </div>
+</section>

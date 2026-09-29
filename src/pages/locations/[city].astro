@@ -1,0 +1,556 @@
+---
+/**
+ * CITY PAGE TEMPLATE — STATEWIDE LOCAL SEO
+ * Generates an in-depth, 2,200+ word, unique SEO landing page for all 208 Connecticut towns.
+ */
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import TrustStrip from '../../components/TrustStrip.astro';
+import ProcessSteps from '../../components/ProcessSteps.astro';
+import Testimonials from '../../components/Testimonials.astro';
+import FAQ from '../../components/FAQ.astro';
+import CTABand from '../../components/CTABand.astro';
+import ContactSection from '../../components/ContactSection.astro';
+import ServiceAreaMap from '../../components/ServiceAreaMap.astro';
+import { siteConfig, services, cities } from '../../data/siteConfig';
+import { cityDetails } from '../../data/cityDetails';
+
+export function getStaticPaths() {
+  return cities.map(city => ({
+    params: { city: city.slug },
+    props: { city },
+  }));
+}
+
+const { city } = Astro.props;
+const { businessName, phone, phoneClean, address, primaryKeyword, experienceYears } = siteConfig;
+const state = address.state;
+const stateAbbr = address.stateAbbr;
+
+// Pull rich local details from cityDetails database
+const detail = cityDetails[city.slug] || {
+  name: city.name,
+  slug: city.slug,
+  county: city.county || "Hartford County",
+  h1: `Same-Day Toilet Repair in ${city.name}`,
+  secondaryH2: `24/7 Toilet Plumbing & Emergency Drain Clearing in ${city.name}, CT`,
+  intro: `When your toilet suddenly overflows, leaks onto the floorboards, or refuses to flush in ${city.name}, you cannot afford to wait days for a plumber. CT Toilet Repair Co. delivers guaranteed same-day toilet repair across ${city.name} and all of ${city.county || "Connecticut"}. Our certified technicians arrive in fully equipped mobile vans ready to resolve stubborn clogs, replace cracked wax rings, and rebuild leaking valves in a single visit.`,
+  waterInfo: "regional public water distribution and private deep wells with seasonal mineral fluctuations.",
+  housingInfo: "a combination of historic homes, mid-century residential neighborhoods, and modern suburban properties.",
+  freezeInfo: "cold New England winter conditions where sub-freezing temperatures cause exterior wall plumbing lines to freeze.",
+  localRoads: ["Main Street Corridor", "Town Center Road", "Route 44", "Village Way"],
+  localLandmarks: ["Town Green", "Memorial Park", "Historic Center", "Community Hall"],
+  faqs: [
+    { question: `How fast can you provide same-day toilet repair in ${city.name}, CT?`, answer: `We offer real same-day service across ${city.name}. For urgent emergencies, our nearest mobile technician arrives on-site within 45 to 90 minutes.` },
+    { question: `Why is my ${city.name} toilet running continuously?`, answer: `Continuous running in ${city.name} is usually triggered by a deteriorated rubber flapper or mineral scale. We replace worn seals with chemical-resistant parts.` },
+    { question: `What causes a toilet in ${city.name} to rock at the base?`, answer: `A rocking toilet indicates a broken closet flange or rotted subflooring. We stabilize the flange and set a new reinforced wax seal.` },
+    { question: `Do you provide upfront pricing in ${city.name}?`, answer: `Yes. We provide 100% upfront flat-rate pricing for all ${city.name} homeowners before starting any work.` },
+    { question: `Can you service commercial flushometers in ${city.name}?`, answer: `Yes. We stock commercial Sloan and Zurn flushometer parts for businesses in ${city.name}.` }
+  ]
+};
+
+// STRICT SEO LIMITS: Title <= 70 chars, Description <= 160 chars
+const pageTitle = `Same-Day Toilet Repair in ${city.name}, CT | 24/7 Dispatch`;
+const pageDescription = `Same-day toilet repair in ${city.name}, CT. CT Toilet Repair Co. fixes leaks, clogs, running toilets, and broken flanges fast. Call (844) 352-0779.`;
+
+// Get current city index to intelligently pick featured services and nearby towns
+const cityIndex = cities.findIndex(c => c.slug === city.slug);
+
+// Nearby cities (4 adjacent towns from the 208 list)
+const nearbyCities = cities
+  .filter(c => c.slug !== city.slug)
+  .slice(Math.max(0, cityIndex - 2), Math.max(0, cityIndex - 2) + 4);
+
+// LocalBusiness schema for this specific city
+const citySchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "PlumbingService",
+  "name": `${businessName} - ${city.name}`,
+  "url": `${siteConfig.domain}/locations/${city.slug}/`,
+  "telephone": phone,
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": city.name,
+    "addressRegion": stateAbbr,
+    "addressCountry": "US",
+  },
+  "areaServed": {
+    "@type": "City",
+    "name": city.name,
+  },
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+      "opens": "00:00",
+      "closes": "23:59"
+    }
+  ],
+  "priceRange": "$$",
+});
+
+// Dynamic Furnace Repair Pros-style hyper-targeted hero lead rotated per city
+const heroLeadSnippets = [
+  `${businessName} provides homeowners and commercial property managers in ${city.name} with emergency toilet repair specialists who arrive with fully stocked trucks to diagnose leaking wax rings, faulty fill valves, broken closet flanges, or severe clogged drains on the first visit. We provide 24/7 emergency response — same-day toilet repair, transparent flat-rate pricing, and guaranteed leak-free performance.`,
+  `${businessName} connects residential and commercial properties across ${city.name} with licensed toilet repair technicians equipped with commercial-grade drain augers and OEM replacement parts to resolve overflowing bowls, continuous running water, rotted subfloor seals, and flapper leaks on the first visit. We deliver 24/7 emergency service — same-day local dispatch, upfront flat rates, and permanent plumbing solutions.`,
+  `${businessName} delivers rapid, on-demand toilet plumbing across ${city.name} with certified emergency specialists who arrive in mobile service units stocked with heavy-duty wax gaskets, universal fill valves, and flange repair rings to eliminate ghost flushing, base leaks, and stubborn mainline blockages on the first visit. Call for 24/7 emergency response — same-day service, zero surprise fees, and guaranteed reliability.`,
+  `${businessName} supplies ${city.name} households and facility operators with expert toilet repair plumbers arriving in fully loaded diagnostic trucks to inspect failing flappers, silent siphon leaks, loose floor mounting bolts, or deep sewer obstructions on the first visit. We guarantee 24/7 emergency response — same-day toilet repairs, honest upfront pricing, and dependable leak prevention.`,
+];
+
+const imgHash = city.slug.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+const heroLead = heroLeadSnippets[imgHash % heroLeadSnippets.length];
+
+// 100% Content-relevant plumbing images (NO vehicles, NO human faces) with dynamic local SEO alt tags
+const cityImagePool = [
+  {
+    src: '/images/toilet-flange-wax-ring-repair.jpg',
+    alt: `Heavy-duty toilet closet flange and reinforced wax ring assembly for repair in ${city.name}, CT - CT Toilet Repair Co.`,
+    caption: `Commercial-grade closet flange and wax ring hardware prepared for installation in ${city.name}, CT.`
+  },
+  {
+    src: '/images/toilet-tank-fill-valve-replacement.jpg',
+    alt: `Open ceramic toilet tank with new anti-siphon fill valve and silicone flapper in ${city.name}, CT - CT Toilet Repair Co.`,
+    caption: `Precision anti-siphon fill valve and flapper calibrated for leak-free flushing in ${city.name} bathrooms.`
+  },
+  {
+    src: '/images/clogged-toilet-plumbing-auger.jpg',
+    alt: `Professional drop-head toilet auger and cleared porcelain bowl in ${city.name}, CT - CT Toilet Repair Co.`,
+    caption: `Drop-head mechanical toilet auger safely clearing stubborn drain obstructions in ${city.name}.`
+  },
+  {
+    src: '/images/toilet-water-supply-shutoff-valve.jpg',
+    alt: `Stainless steel braided toilet water supply line and chrome shutoff valve in ${city.name}, CT - CT Toilet Repair Co.`,
+    caption: `High-pressure braided stainless steel supply line and quarter-turn shutoff valve in ${city.name}.`
+  },
+];
+
+const primaryImg = cityImagePool[imgHash % cityImagePool.length];
+const secondaryImg = cityImagePool[(imgHash + 1) % cityImagePool.length];
+---
+
+<BaseLayout title={pageTitle} description={pageDescription} canonicalUrl={`/locations/${city.slug}/`} schema={citySchema}>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="hero-bg">
+      <div style="width:100%;height:100%;background:linear-gradient(135deg, #052B3B 0%, #0A4D68 50%, #0F172A 100%);"></div>
+    </div>
+    <div class="hero-overlay" style="background: linear-gradient(135deg, rgba(5,43,59,0.7) 0%, rgba(10,77,104,0.5) 50%, rgba(15,23,42,0.7) 100%);"></div>
+    <div class="container">
+      <div class="hero-grid fade-in-up">
+        <div class="hero-content">
+          <Breadcrumb items={[
+            { label: 'Home', href: '/' },
+            { label: 'Locations', href: '/locations/' },
+            { label: city.name },
+          ]} />
+          <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(230, 81, 0, 0.25); border: 1px solid var(--color-accent); padding: 0.35rem 0.85rem; border-radius: 9999px; margin-bottom: var(--space-sm);">
+            <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #22c55e;"></span>
+            <span style="font-size: 0.8125rem; font-weight: 700; color: #ffedd5; text-transform: uppercase;">Same-Day Dispatch in {city.name}, CT</span>
+          </div>
+          <h1>Same-Day Toilet Repair in <span class="highlight">{city.name}, CT</span></h1>
+          <p class="hero-subtitle">
+            {heroLead}
+          </p>
+          <div class="btn-group">
+            <a href={`tel:${phoneClean}`} class="btn btn-accent btn-lg" style="font-weight: 700; box-shadow: 0 10px 25px rgba(230,81,0,0.4);">
+              📞 Call 24/7: {phone}
+            </a>
+            <a href="/services/" class="btn btn-white btn-lg">
+              View All 7 Services
+            </a>
+          </div>
+          <div class="hero-badges">
+            <span class="hero-badge">✅ Licensed CT Plumbers</span>
+            <span class="hero-badge">⭐ {experienceYears} Years Experience</span>
+            <span class="hero-badge">⏰ Same-Day Response</span>
+            <span class="hero-badge">💵 Upfront Flat Pricing</span>
+          </div>
+        </div>
+
+        <!-- Hero Media Card (Furnace Repair Pros style) -->
+        <div class="hero-media">
+          <div class="hero-card-frame">
+            <img 
+              src={primaryImg.src} 
+              alt={primaryImg.alt} 
+              width="900" 
+              height="650" 
+              class="hero-main-img" 
+              loading="eager" 
+              decoding="async"
+            />
+            <div class="hero-same-day-badge">
+              <span>⚡</span>
+              <span>Same-Day Service in {city.name}, CT</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TRUST STRIP ============ -->
+  <TrustStrip items={[
+    { icon: '🛡️', label: 'Licensed & Insured' },
+    { icon: '⭐', label: `${experienceYears} Years Experience` },
+    { icon: '⏰', label: `Same-Day Local in ${city.name}` },
+    { icon: '💵', label: 'Upfront Flat Rates' },
+  ]} />
+
+  <!-- ============ SECTION 1: TOWN PLUMBING & HOUSING DYNAMICS ============ -->
+  <section class="section" id="local-plumbing-environment">
+    <div class="container container-narrow">
+      <div class="reveal">
+        <span class="section-label">Same-Day Local Service</span>
+        <h2>{detail.secondaryH2}</h2>
+        <p style="font-size: 1.15rem; line-height: 1.8; margin-bottom: var(--space-lg); font-weight: 500;">
+          {detail.intro}
+        </p>
+        <p style="font-size: 1.05rem; line-height: 1.8; margin-bottom: var(--space-lg);">
+          Residential and commercial bathrooms in {city.name} face unique operating conditions defined by local architecture, soil composition, and regional water supply dynamics. Throughout {city.name} and surrounding {detail.county}, properties typically feature {detail.housingInfo}. Because many homes were constructed with heavy cast iron drain stacks and older galvanized waste arms, modern low-flow toilets can struggle to generate sufficient siphon velocity if internal components or main sewer lines are partially restricted.
+        </p>
+        <p style="font-size: 1.05rem; line-height: 1.8; color: var(--color-text-light); margin-bottom: var(--space-lg);">
+          Furthermore, water quality across {city.name} is influenced by {detail.waterInfo}. High concentrations of dissolved calcium and magnesium react directly with rubber gaskets, flapper seals, and ballcock valves, causing premature brittleness, warping, and silent leaks that waste thousands of gallons of treated water each month. When combined with {detail.freezeInfo}, bathroom fixtures installed against exterior framing or above unconditioned basements require robust insulation and proper atmospheric venting to avoid catastrophic winter line splits.
+        </p>
+        <p style="font-size: 1.05rem; line-height: 1.8;">
+          At {businessName}, our Connecticut-licensed master plumbers have spent over {experienceYears} years diagnosing and correcting these exact local plumbing failures. Rather than relying on temporary fixes or generic store-bought parts, our technicians arrive equipped with commercial-grade replacement valves, heavy-duty stainless steel closet flange brackets, and motorized drop-head augers designed to preserve your porcelain while completely clearing obstructions.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 2: COMPREHENSIVE 7 TOILET REPAIR SERVICES ============ -->
+  <section class="section section-alt" id="services-breakdown">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-label">Expert Solutions</span>
+        <h2>Full-Service Toilet Repair & Restoration in {city.name}, CT</h2>
+        <p>Our licensed plumbers provide comprehensive diagnostic and repair capabilities for all residential, commercial, and multi-family toilet systems across {city.name}.</p>
+      </div>
+
+      <div style="display: grid; gap: var(--space-2xl); max-width: 1000px; margin-inline: auto;">
+        
+        <!-- Service 1 -->
+        <div class="card reveal" style="padding: var(--space-2xl); background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-lg);">
+          <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: var(--space-md);">
+            <div style="font-size: 2.25rem;">🚽</div>
+            <div>
+              <h3 style="margin-bottom: 0.25rem; font-size: 1.4rem;">1. Clogged Toilet Unclogging in {city.name}</h3>
+              <span style="font-size: 0.875rem; color: var(--color-primary); font-weight: 600;">Heavy-Duty Mechanical Snaking & Obstruction Removal</span>
+            </div>
+          </div>
+          <p style="font-size: 1.05rem; line-height: 1.8; color: var(--color-text);">
+            A toilet clog that resists conventional plunging usually indicates a blockage lodged deep within the integrated trapway or the building's 3-inch waste line. In {city.name} homes, common culprits include compacted toilet paper, baby wipes marketed as flushable, feminine hygiene products, dense hair masses, or foreign objects accidentally flushed by children. Attempting to force stubborn clogs with aggressive chemical drain cleaners can generate intense exothermic heat that cracks vitreous china porcelain and corrodes aging metal drain fittings.
+          </p>
+          <p style="font-size: 1.05rem; line-height: 1.8; color: var(--color-text-light); margin-top: var(--space-sm);">
+            Our plumbers utilize professional Rigid K-6P toilet augers equipped with protective vinyl sheathing to safely navigate the internal porcelain bends without leaving unsightly grey scratches on your bowl. For blockages situated beyond the fixture in the main soil pipe, we deploy specialized motorized drain snakes and digital pipe inspection cameras to confirm total line clearance and ensure wastewater flows freely toward the municipal sewer or private septic tank.
+          </p>
+          <div style="margin-top: var(--space-md);">
+            <a href="/services/clogged-toilet-unclogging/" class="card-link">Learn More About Toilet Unclogging →</a>
+          </div>
+        </div>
+
+        <!-- Service 2 -->
+        <div class="card reveal" style="padding: var(--space-2xl); background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-lg);">
+          <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: var(--space-md);">
+            <div style="font-size: 2.25rem;">💧</div>
+            <div>
+              <h3 style="margin-bottom: 0.25rem; font-size: 1.4rem;">2. Toilet Leak Repair & Precision Detection in {city.name}</h3>
+              <span style="font-size: 0.875rem; color: var(--color-primary); font-weight: 600;">Base Leaks, Tank-to-Bowl Gaskets & Supply Line Integrity</span>
+            </div>
+          </div>
+          <p style="font-size: 1.05rem; line-height: 1.8; color: var(--color-text);">
+            Water pooling around the base of your toilet in {city.name} is a serious structural hazard. Many homeowners mistakenly assume condensation or surface splashing is to blame, while contaminated toilet water is actively soaking into the subflooring, rotting plywood sheeting, and deteriorating ceiling plaster in the rooms below. Base leaks occur when the wax ring seal between the toilet horn and closet flange is compressed unevenly, degrades over decades of use, or breaks due to fixture movement.
+          </p>
+          <p style="font-size: 1.05rem; line-height: 1.8; color: var(--color-text-light); margin-top: var(--space-sm);">
+            We also systematically inspect and replace deteriorated tank-to-bowl spud gaskets, corroded brass tank bolts, hairline fractures in the china casting, and aging flexible braided supply tubes. Every leak repair in {city.name} concludes with high-pressure diagnostic dye testing and multiple full-volume flushes to verify complete watertight performance before our plumbers depart.
+          </p>
+          <div style="margin-top: var(--space-md);">
+            <a href="/services/toilet-leak-repair/" class="card-link">Learn More About Toilet Leak Repair →</a>
+          </div>
+        </div>
+
+        <!-- Service 3 -->
+        <div class="card reveal" style="padding: var(--space-2xl); background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-lg);">
+          <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: var(--space-md);">
+            <div style="font-size: 2.25rem;">🔄</div>
+            <div>
+              <h3 style="margin-bottom: 0.25rem; font-size: 1.4rem;">3. Running Toilet Repair & Water Conservation in {city.name}</h3>
+              <span style="font-size: 0.875rem; color: var(--color-primary); font-weight: 600;">Eliminate Ghost Flushing, Whistling Fill Valves & Water Waste</span>
+            </div>
+          </div>
+          <p style="font-size: 1.05rem; line-height: 1.8; color: var(--color-text);">
+            A toilet that cycles on and off unprovoked—commonly known as 'ghost flushing'—wastes between 100 and 250 gallons of water every day in Connecticut homes. Over a billing cycle, this continuous internal leak can add hundreds of dollars to your municipal utility bill or place unnecessary strain on your private well pump and pressure tank. Ghost flushing occurs when water slowly trickles from the tank into the bowl past a defective flapper, dropping the tank level until the fill valve triggers automatically to replenish the water.
+          </p>
+          <p style="font-size: 1.05rem; line-height: 1.8; color: var(--color-text-light); margin-top: var(--space-sm);">
+            Our technicians replace degraded flush valve seats, eliminate improper chain tension that binds flappers open, and adjust overflow tube heights to exact manufacturer specifications. We ensure your toilet operates silently, refilling cleanly in under 45 seconds after every flush.
+          </p>
+          <div style="margin-top: var(--space-md);">
+            <a href="/services/running-toilet-repair/" class="card-link">Learn More About Running Toilet Repair →</a>
+          </div>
+        </div>
+
+        <!-- Content-relevant SEO Image 2 (NO vehicles, NO faces) -->
+        <figure style="margin: var(--space-md) 0; border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid var(--color-border); background: var(--color-bg);">
+          <img 
+            src={secondaryImg.src} 
+            alt={secondaryImg.alt} 
+            width="800" 
+            height="450" 
+            loading="lazy" 
+            decoding="async" 
+            style="width: 100%; height: auto; max-height: 480px; display: block; object-fit: cover;"
+          />
+          <figcaption style="padding: 0.75rem 1rem; font-size: 0.875rem; color: var(--color-text-light); background: var(--color-bg-alt); border-top: 1px solid var(--color-border); font-style: italic;">
+            🔧 {secondaryImg.caption}
+          </figcaption>
+        </figure>
+
+        <!-- Service 4 -->
+        <div class="card reveal" style="padding: var(--space-2xl); background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-lg);">
+          <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: var(--space-md);">
+            <div style="font-size: 2.25rem;">⚙️</div>
+            <div>
+              <h3 style="margin-bottom: 0.25rem; font-size: 1.4rem;">4. Flapper & Fill Valve Replacement in {city.name}</h3>
+              <span style="font-size: 0.875rem; color: var(--color-primary); font-weight: 600;">Commercial-Grade Silicone Seals & Anti-Siphon Assemblies</span>
+            </div>
+          </div>
+          <p style="font-size: 1.05rem; line-height: 1.8; color: var(--color-text);">
+            Standard rubber flappers purchased at big-box hardware stores degrade rapidly when exposed to Connecticut's municipal chloramines or naturally acidic well water. Within two to three years, the rubber warps, blisters, and loses its smooth seal against the flush valve orifice. Similarly, older mechanical ballcock assemblies with copper float rods frequently seize, causing continuous hissing, loud water hammer noises in bathroom walls, and slow fill cycles.
+          </p>
+          <p style="font-size: 1.05rem; line-height: 1.8; color: var(--color-text-light); margin-top: var(--space-sm);">
+            We install premium chemical-resistant silicone flappers and modern anti-siphon fill valves certified to ASSE standards. These commercial assemblies prevent hazardous back-siphonage into your potable drinking water supply, resist calcium build-up, and provide micro-adjustable float dials for exact water conservation and optimal bowl replenishment.
+          </p>
+          <div style="margin-top: var(--space-md);">
+            <a href="/services/flapper-and-fill-valve-replacement/" class="card-link">Learn More About Flapper & Fill Valve Replacement →</a>
+          </div>
+        </div>
+
+        <!-- Service 5 -->
+        <div class="card reveal" style="padding: var(--space-2xl); background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-lg);">
+          <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: var(--space-md);">
+            <div style="font-size: 2.25rem;">🚨</div>
+            <div>
+              <h3 style="margin-bottom: 0.25rem; font-size: 1.4rem;">5. 24/7 Emergency Toilet Repair in {city.name}</h3>
+              <span style="font-size: 0.875rem; color: var(--color-primary); font-weight: 600;">Immediate Dispatch for Overflows, Broken Porcelain & Flooding</span>
+            </div>
+          </div>
+          <p style="font-size: 1.05rem; line-height: 1.8; color: var(--color-text);">
+            A toilet overflowing onto hardwood or carpeting in the middle of the night cannot wait until normal business hours. Blackwater spills contain dangerous bacteria and pathogens that require immediate containment, rapid isolation, and professional remediation. If a frozen pipe suddenly thaws and splits the ceramic tank or an unmovable main line backup fills the bowl to the rim, property owners in {city.name} need immediate access to an on-duty master plumber.
+          </p>
+          <p style="font-size: 1.05rem; line-height: 1.8; color: var(--color-text-light); margin-top: var(--space-sm);">
+            Our emergency hotline is active 24 hours a day, 365 days a year—including holidays and severe winter storms. We dispatch licensed technicians stationed across Connecticut with complete toilet rebuild kits, emergency shutoff tooling, and water extraction capability to protect your home from devastating structural damage.
+          </p>
+          <div style="margin-top: var(--space-md);">
+            <a href="/services/emergency-toilet-repair/" class="card-link">Learn More About 24/7 Emergency Toilet Repair →</a>
+          </div>
+        </div>
+
+        <!-- Service 6 -->
+        <div class="card reveal" style="padding: var(--space-2xl); background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-lg);">
+          <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: var(--space-md);">
+            <div style="font-size: 2.25rem;">🔧</div>
+            <div>
+              <h3 style="margin-bottom: 0.25rem; font-size: 1.4rem;">6. Flange Repair & Wax Ring Replacement in {city.name}</h3>
+              <span style="font-size: 0.875rem; color: var(--color-primary); font-weight: 600;">Fix Wobbly Toilets, Broken Closet Bolts & Subfloor Wood Rot</span>
+            </div>
+          </div>
+          <p style="font-size: 1.05rem; line-height: 1.8; color: var(--color-text);">
+            If your toilet rocks from side to side when seated, the mechanical connection anchoring the fixture to your bathroom subfloor has failed. In older {city.name} residences, closet flanges were often constructed from brittle cast iron or soldered brass rings. Over decades of foot traffic and structural settling, the flange collars snap where the T-bolts anchor the bowl, completely breaking the airtight wax ring seal beneath.
+          </p>
+          <p style="font-size: 1.05rem; line-height: 1.8; color: var(--color-text-light); margin-top: var(--space-sm);">
+            We pull the toilet safely, inspect the underlying subflooring for dry rot or moisture deterioration, and install heavy-duty stainless steel flange repair brackets or new PVC/cast iron mechanical compression flanges. We then set an extra-thick reinforced wax ring with a built-in urethane horn, shim the base level against the floor tile, and secure solid brass closet bolts that eliminate wobbling permanently.
+          </p>
+          <div style="margin-top: var(--space-md);">
+            <a href="/services/flange-repair/" class="card-link">Learn More About Flange Repair & Wax Rings →</a>
+          </div>
+        </div>
+
+        <!-- Service 7 -->
+        <div class="card reveal" style="padding: var(--space-2xl); background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-lg);">
+          <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: var(--space-md);">
+            <div style="font-size: 2.25rem;">🏢</div>
+            <div>
+              <h3 style="margin-bottom: 0.25rem; font-size: 1.4rem;">7. Commercial Toilet Repair & Flushometer Service in {city.name}</h3>
+              <span style="font-size: 0.875rem; color: var(--color-primary); font-weight: 600;">Sloan & Zurn Commercial Valves, Sensor Systems & Multi-Stall Restrooms</span>
+            </div>
+          </div>
+          <p style="font-size: 1.05rem; line-height: 1.8; color: var(--color-text);">
+            Commercial restrooms in {city.name} office buildings, retail establishments, dining venues, and healthcare practices operate under heavy patron traffic and continuous commercial water pressure. Tankless commercial toilets rely on precision flushometer diaphragm and piston assemblies engineered to deliver high-velocity flushes at 25 to 50 PSI water line pressures. When relief valve bypass orifices clog or rubber diaphragms rupture, flushometers either fail to shut off—running hundreds of gallons continuously—or produce weak, non-clearing flushes.
+          </p>
+          <p style="font-size: 1.05rem; line-height: 1.8; color: var(--color-text-light); margin-top: var(--space-sm);">
+            Our commercial plumbing crews service Sloan Royal, Sloan Regal, Zurn AquaVantage, and hands-free infrared sensor flushometers. We carry complete vacuum breaker repair kits, handle rebuild assemblies, and electronic solenoid modules to ensure your commercial facility remains fully ADA-compliant and operational with zero business interruption.
+          </p>
+          <div style="margin-top: var(--space-md);">
+            <a href="/services/commercial-toilet-repair/" class="card-link">Learn More About Commercial Toilet Repair →</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 3: STEP-BY-STEP DIAGNOSTIC & WORKFLOW ============ -->
+  <ProcessSteps title={`Our 4-Step Professional Repair Process in ${city.name}`} subtitle="Standardized excellence, precision diagnostics, and upfront communication from initial phone dispatch to final testing." />
+
+  <!-- ============ SECTION 4: LOCAL HOUSING & CODE COMPLIANCE ============ -->
+  <section class="section section-alt" id="local-building-codes">
+    <div class="container container-narrow">
+      <div class="reveal">
+        <span class="section-label">State & Local Standards</span>
+        <h2>Connecticut Plumbing Code Compliance in {city.name}</h2>
+        <p style="font-size: 1.05rem; line-height: 1.8; margin-bottom: var(--space-md);">
+          All plumbing repairs and fixture replacements performed by {businessName} strictly comply with the Connecticut State Building Code, which incorporates the 2021 International Plumbing Code (IPC) and local municipal amendments. In {city.name}, ensuring that toilets are installed with proper minimum clearances (at least 15 inches from the center of the bowl to any side wall and 21 inches of clear space in front of the fixture) is essential for safety and accessibility compliance.
+        </p>
+        <p style="font-size: 1.05rem; line-height: 1.8; margin-bottom: var(--space-md);">
+          When replacing damaged closet flanges or rebuilding waste arms in older properties across {detail.county}, our plumbers verify that venting stacks are unobstructed and correctly sized to prevent negative siphonage from pulling trap seals dry. For historic homes transitioning from legacy lead bends or drum traps to modern schedule 40 piping, we install shielded transition couplings approved by the Connecticut Department of Consumer Protection, ensuring long-term code compliance and smooth real estate inspections.
+        </p>
+        <p style="font-size: 1.05rem; line-height: 1.8;">
+          Learn more about state plumbing licensing and consumer protection standards directly via the <a href="https://portal.ct.gov/dcp" target="_blank" rel="noopener nofollow" style="color: var(--color-primary); font-weight: 600; text-decoration: underline;">Connecticut Department of Consumer Protection Official Portal</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 5: TRANSPARENT UPFRONT PRICING GUARANTEE ============ -->
+  <section class="section" id="pricing-guarantee">
+    <div class="container">
+      <div class="pricing-box reveal">
+        <div class="pricing-badge">💵 Upfront Flat-Rate Pricing</div>
+        <h2>Predictable, Guaranteed Pricing for {city.name} Residents</h2>
+        <p style="max-width: 700px; margin-inline: auto; color: var(--color-text-light); font-size: 1.05rem; line-height: 1.7;">
+          At {businessName}, we believe homeowners in {city.name} should never have to guess what a toilet repair will cost while an open-ended hourly meter runs. We provide straightforward, flat-rate pricing based on the exact job required.
+        </p>
+        <div class="pricing-features">
+          <div class="pricing-feature">
+            <span style="color: var(--color-success); font-weight: 700;">✓</span> Upfront Written Flat Rates
+          </div>
+          <div class="pricing-feature">
+            <span style="color: var(--color-success); font-weight: 700;">✓</span> Factory-Certified Replacement Parts
+          </div>
+          <div class="pricing-feature">
+            <span style="color: var(--color-success); font-weight: 700;">✓</span> Zero Hidden Travel or Dispatch Fees
+          </div>
+          <div class="pricing-feature">
+            <span style="color: var(--color-success); font-weight: 700;">✓</span> Complete Written Workmanship Warranty
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 6: COMMON SIGNS YOU NEED PROFESSIONAL REPAIR ============ -->
+  <section class="section section-alt" id="warning-signs">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-label">Troubleshooting</span>
+        <h2>Warning Signs Your {city.name} Toilet Requires Immediate Attention</h2>
+        <p>Catching minor fixture failures early prevents costly drywall repairs, floor replacement, and astronomical water bills.</p>
+      </div>
+
+      <div class="problems-grid">
+        <div class="problem-item reveal">
+          <div class="problem-icon">🔊</div>
+          <div>
+            <h4>Gurgling Sounds When Other Fixtures Drain</h4>
+            <p>If your toilet gurgles or bubbles when the bathroom shower runs or washing machine discharges, your plumbing vent stack is blocked or your main sewer branch is experiencing heavy back-pressure.</p>
+          </div>
+        </div>
+        <div class="problem-item reveal">
+          <div class="problem-icon">👃</div>
+          <div>
+            <h4>Persistent Sewer Gas Odors in the Bathroom</h4>
+            <p>A chronic sewage smell indicates that the wax ring seal between your toilet and floor has ruptured, allowing dangerous methane and airborne sewer gases to escape into your living space.</p>
+          </div>
+        </div>
+        <div class="problem-item reveal">
+          <div class="problem-icon">🌊</div>
+          <div>
+            <h4>Water Level Rising Toward the Rim During Flushing</h4>
+            <p>Sluggish draining accompanied by water rising close to overflow height signifies a partial trapway obstruction or downstream sewer buildup that requires motorized augering.</p>
+          </div>
+        </div>
+        <div class="problem-item reveal">
+          <div class="problem-icon">💧</div>
+          <div>
+            <h4>Spongy or Discolored Flooring Around the Fixture Base</h4>
+            <p>Soft vinyl or discolored grout around the toilet bowl indicates that water has been escaping beneath the porcelain for weeks, compromising structural floor joists.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 7: TESTIMONIALS ============ -->
+  <Testimonials title={`Recent Customer Feedback from ${city.name} Area`} subtitle={`Read verified experiences from homeowners across ${detail.county} who rely on our 24/7 toilet repair team.`} />
+
+  <!-- ============ SECTION 8: LOCAL SERVICE COVERAGE CORRIDORS ============ -->
+  <section class="section" id="neighborhoods-coverage">
+    <div class="container container-narrow">
+      <div class="section-header reveal">
+        <span class="section-label">Service Corridors</span>
+        <h2>Prompt Coverage Across {city.name} & Surrounding Communities</h2>
+        <p>Our mobile units navigate all local roadways, commercial corridors, and residential neighborhoods across {city.name} to deliver swift emergency assistance.</p>
+      </div>
+
+      <div class="reveal" style="background: var(--color-bg-alt); padding: var(--space-xl); border-radius: var(--radius-lg); border: 1px solid var(--color-border); font-size: 1.05rem; line-height: 1.8;">
+        <p style="margin-bottom: var(--space-md);">
+          Whether your property is located near the {detail.localRoads.join(', ')}, or situated around {detail.localLandmarks.join(', ')}, our licensed plumbing technicians are stationed strategically throughout {detail.county} for rapid emergency dispatch.
+        </p>
+        <p style="margin-bottom: 0;">
+          We carry complete inventory on every truck, allowing us to resolve emergency clogs, tank seal leaks, wobbly closet flanges, and defective fill valves on site without delays waiting for parts distributors to open.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 9: NEARBY CITIES ============ -->
+  <section class="section section-alt" id="nearby">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-label">Regional Network</span>
+        <h2>Nearby Connecticut Towns We Also Serve</h2>
+        <p>Our decentralized fleet provides seamless 24/7 toilet repair across adjacent Connecticut municipalities.</p>
+      </div>
+
+      <div class="nearby-cities" style="justify-content:center; max-width: 900px; margin-inline: auto;">
+        {nearbyCities.map(nearby => (
+          <a href={`/locations/${nearby.slug}/`} class="nearby-city-card reveal">
+            <h4>{nearby.name}, CT</h4>
+            <p>24/7 Toilet Repair & Drain Service</p>
+          </a>
+        ))}
+      </div>
+
+      <div style="text-align:center; margin-top: var(--space-xl);">
+        <a href="/locations/" class="btn btn-outline">Explore All 208 Connecticut Cities & Towns →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 10: CITY COVERAGE MAP ============ -->
+  <ServiceAreaMap
+    badge="Coverage Map"
+    title={`Our Service Area in ${city.name}, CT`}
+    subtitle={`24/7 licensed toilet repair and emergency plumbing dispatch covering all residential and commercial properties across ${city.name} and ${detail.county} County.`}
+    query={`${city.name}, CT, USA`}
+    zoom={12}
+  />
+
+  <!-- ============ SECTION 11: TOWN-SPECIFIC FAQS ============ -->
+  <FAQ faqs={detail.faqs} title={`Frequently Asked Questions in ${city.name}, CT`} subtitle={`Expert answers to common toilet troubleshooting and plumbing questions from ${city.name} property owners.`} />
+
+  <!-- ============ CTA BAND ============ -->
+  <CTABand
+    title={`Need Fast Toilet Repair in ${city.name}, CT?`}
+    subtitle="Our 24/7 emergency dispatch team is on standby. Speak directly with a licensed Connecticut plumber right now."
+    primaryCta={{ text: `📞 Call 24/7: ${phone}`, href: `tel:${phoneClean}` }}
+    secondaryCta={{ text: "View All 7 Services", href: "/services/" }}
+  />
+
+  <!-- ============ CONTACT ============ -->
+  <ContactSection />
+
+</BaseLayout>

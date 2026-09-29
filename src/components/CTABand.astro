@@ -1,0 +1,31 @@
+---
+import { siteConfig } from '../data/siteConfig';
+
+interface Props {
+  title?: string;
+  subtitle?: string;
+  primaryCta?: { text: string; href: string; };
+  secondaryCta?: { text: string; href: string; };
+}
+
+const { phone } = siteConfig;
+const phoneClean = phone.replace(/[^+\d]/g, '');
+
+const {
+  title = 'Need Immediate Toilet Repair in Connecticut?',
+  subtitle = 'Call our 24/7 emergency dispatch line right now. Transparent upfront pricing and licensed local technicians.',
+  primaryCta = { text: `📞 Call 24/7: ${phone}`, href: `tel:${phoneClean}` },
+  secondaryCta = { text: 'View All 208 CT Cities', href: '/locations/' },
+} = Astro.props;
+---
+
+<section class="cta-band">
+  <div class="container">
+    <h2>{title}</h2>
+    <p>{subtitle}</p>
+    <div class="btn-group">
+      <a href={primaryCta.href} class="btn btn-accent btn-lg">{primaryCta.text}</a>
+      <a href={secondaryCta.href} class="btn btn-white btn-lg">{secondaryCta.text}</a>
+    </div>
+  </div>
+</section>

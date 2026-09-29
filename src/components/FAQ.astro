@@ -1,0 +1,100 @@
+---
+interface FAQItem {
+  question: string;
+  answer: string;
+}
+
+interface Props {
+  faqs: FAQItem[];
+  title?: string;
+  subtitle?: string;
+  includeSchema?: boolean;
+}
+
+const { faqs, title = 'Frequently Asked Questions', subtitle, includeSchema = true } = Astro.props;
+
+// FAQPage schema
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(faq => ({
+    "@type": "Question",
+    "name": faq.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": faq.answer,
+    },
+  })),
+};
+---
+
+<section class="section" id="faq">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label">FAQ</span>
+      <h2>{title}</h2>
+      {subtitle && <p>{subtitle}</p>}
+    </div>
+
+    <div class="faq-list">
+      {faqs.map((faq, index) => (
+        <div class="faq-item reveal" data-faq-item>
+          <button class="faq-question" aria-expanded="false" aria-controls={`faq-answer-${index}`}>
+            <span>{faq.question}</span>
+            <span class="faq-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </span>
+          </button>
+          <div class="faq-answer" id={`faq-answer-${index}`} role="region">
+            <div class="faq-answer-inner">
+              <p>{faq.answer}</p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+{includeSchema && <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />}
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const faqItems = document.querySelectorAll('[data-faq-item]');
+
+    faqItems.forEach(item => {
+      const button = item.querySelector('.faq-question') as HTMLButtonElement;
+      const answer = item.querySelector('.faq-answer') as HTMLElement;
+
+      if (!button || !answer) return;
+
+      button.addEventListener('click', () => {
+        const isOpen = item.classList.contains('active');
+
+        // Close all others
+        faqItems.forEach(otherItem => {
+          if (otherItem !== item) {
+            otherItem.classList.remove('active');
+            const otherBtn = otherItem.querySelector('.faq-question') as HTMLButtonElement;
+            const otherAnswer = otherItem.querySelector('.faq-answer') as HTMLElement;
+            if (otherBtn) otherBtn.setAttribute('aria-expanded', 'false');
+            if (otherAnswer) otherAnswer.style.maxHeight = '0';
+          }
+        });
+
+        // Toggle current
+        if (isOpen) {
+          item.classList.remove('active');
+          button.setAttribute('aria-expanded', 'false');
+          answer.style.maxHeight = '0';
+        } else {
+          item.classList.add('active');
+          button.setAttribute('aria-expanded', 'true');
+          answer.style.maxHeight = answer.scrollHeight + 'px';
+        }
+      });
+    });
+  });
+</script>

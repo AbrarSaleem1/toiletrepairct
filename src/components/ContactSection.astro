@@ -1,0 +1,90 @@
+---
+import { siteConfig } from '../data/siteConfig';
+
+const { businessName, phone, phoneClean, email, address, hours, experienceYears } = siteConfig;
+---
+
+<section class="section" id="contact">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label">24/7 Emergency Dispatch</span>
+      <h2>Get Immediate Toilet Repair in Connecticut</h2>
+      <p>Need urgent service or have questions? Speak directly with our on-duty Connecticut dispatch team.</p>
+    </div>
+
+    <div class="contact-section">
+      <!-- Contact Info -->
+      <div class="contact-info reveal">
+        <h3>Contact Headquarters</h3>
+
+        <div class="contact-detail">
+          <div class="contact-detail-icon">📞</div>
+          <div>
+            <h4>24/7 Phone Hotline</h4>
+            <a href={`tel:${phoneClean}`} style="font-size: 1.25rem; font-weight: 700; color: var(--color-accent);">{phone}</a>
+            <p>Immediate dispatch for toilet clogs, leaks & emergencies</p>
+          </div>
+        </div>
+
+        <div class="contact-detail">
+          <div class="contact-detail-icon">📍</div>
+          <div>
+            <h4>Office Location</h4>
+            <p>{address.street}<br />{address.city}, {address.stateAbbr} {address.zip}, USA</p>
+            <p style="font-size: 0.8125rem; color: var(--color-text-light); margin-top: 0.25rem;">Dispatched locally across all 208 CT towns</p>
+          </div>
+        </div>
+
+        <div class="contact-detail">
+          <div class="contact-detail-icon">✉️</div>
+          <div>
+            <h4>Email Support</h4>
+            <a href={`mailto:${email}`}>{email}</a>
+            <p>General inquiries & business billing</p>
+          </div>
+        </div>
+
+        <div class="contact-detail">
+          <div class="contact-detail-icon">🕐</div>
+          <div>
+            <h4>Operating Hours</h4>
+            <p style="font-weight: 600; color: var(--color-primary);">{hours.emergency}</p>
+            <p>Mon–Sun: Open 24 Hours / 7 Days</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Direct Call Action Box (Replacing form with high-converting CTA) -->
+      <div class="contact-form reveal" style="display: flex; flex-direction: column; justify-content: center; background: linear-gradient(145deg, #0A4D68 0%, #052B3B 100%); color: #ffffff; padding: var(--space-2xl); border-radius: var(--radius-lg); box-shadow: var(--shadow-xl);">
+        <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(230, 81, 0, 0.2); border: 1px solid var(--color-accent); padding: 0.35rem 0.85rem; border-radius: 9999px; width: fit-content; margin-bottom: var(--space-md);">
+          <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #22c55e;"></span>
+          <span style="font-size: 0.8125rem; font-weight: 600; color: #ffedd5; text-transform: uppercase; letter-spacing: 0.05em;">Dispatchers On Duty Now</span>
+        </div>
+
+        <h3 style="color: #ffffff; font-size: 1.75rem; margin-bottom: 0.75rem;">Fastest Response: Call Directly</h3>
+        <p style="color: #E0F2FE; font-size: 1rem; margin-bottom: var(--space-xl); line-height: 1.6;">
+          For immediate assistance with clogged toilets, running water, active leaks, or flange damage, calling our hotline gets a licensed CT plumber to your home or business fast.
+        </p>
+
+        <a href={`tel:${phoneClean}`} class="btn btn-accent btn-lg" style="text-align: center; justify-content: center; font-size: 1.25rem; padding: 1.1rem 1.5rem; box-shadow: 0 8px 24px rgba(230,81,0,0.4); margin-bottom: var(--space-lg);">
+          📞 Call {phone}
+        </a>
+
+        <div style="border-top: 1px solid rgba(208,208,208,0.15); padding-top: var(--space-lg); display: grid; gap: 0.65rem;">
+          <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9375rem; color: #f1f5f9;">
+            <span style="color: #4ade80;">✓</span> <strong>{experienceYears} Years</strong> Connecticut Plumbing Experience
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9375rem; color: #f1f5f9;">
+            <span style="color: #4ade80;">✓</span> <strong>Upfront Transparent Pricing</strong> — Quote before work starts
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9375rem; color: #f1f5f9;">
+            <span style="color: #4ade80;">✓</span> <strong>Fully Licensed & Insured</strong> for residential & commercial
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9375rem; color: #f1f5f9;">
+            <span style="color: #4ade80;">✓</span> Serving all <strong>208 Connecticut Cities & Towns</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

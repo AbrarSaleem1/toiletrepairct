@@ -1,0 +1,145 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import TrustStrip from '../../components/TrustStrip.astro';
+import FAQ from '../../components/FAQ.astro';
+import CTABand from '../../components/CTABand.astro';
+import ContactSection from '../../components/ContactSection.astro';
+import ServiceAreaMap from '../../components/ServiceAreaMap.astro';
+import { siteConfig, cities } from '../../data/siteConfig';
+
+const { businessName, phone, phoneClean, address, primaryKeyword, experienceYears } = siteConfig;
+const state = address.state;
+
+// STRICT SEO LIMITS: Title <= 70 chars, Description <= 160 chars
+const pageTitle = `Toilet Repair Service Areas in CT | CT Toilet Repair Co.`;
+const pageDescription = `CT Toilet Repair Co. serves 208 cities across Connecticut. Fast 24/7 local dispatch for toilet clogs, leaks, and emergencies. Call (844) 352-0779.`;
+
+const locationsFaqs = [
+  { question: `Do you provide toilet repair service in all 208 Connecticut towns?`, answer: `Yes. CT Toilet Repair Co. covers all 208 municipalities on our service registry across Connecticut. From Stamford to Hartford, Salisbury, and Stonington, our mobile units are on standby 24/7.` },
+  { question: 'Do you charge extra travel fees for distant or rural Connecticut towns?', answer: 'No. We provide clear, flat-rate upfront pricing regardless of your town in Connecticut. Travel and dispatch costs are never added as hidden line items.' },
+  { question: 'How quickly can a plumber arrive at my Connecticut address?', answer: 'For urgent emergencies (overflows, raw sewage backups, active leaks), our dispatchers locate the nearest regional truck and typically have a technician on-site within 45 to 90 minutes.' },
+  { question: 'Are your plumbers licensed to work across the state of Connecticut?', answer: `Yes. Every technician holds active Connecticut Department of Consumer Protection plumbing occupational licenses with complete insurance and workers\' comp coverage.` },
+  { question: 'Can you handle multiple commercial toilets across different Connecticut facilities?', answer: 'Yes. We work with commercial property managers and multi-unit complexes across the entire state of Connecticut, providing standardized invoicing and emergency priority agreements.' },
+];
+
+// Alphabetical grouping for 208 cities
+const alphabet = Array.from(new Set(cities.map(c => c.name[0].toUpperCase()))).sort();
+---
+
+<BaseLayout title={pageTitle} description={pageDescription} canonicalUrl="/locations/">
+
+  <!-- Hero -->
+  <section class="hero hero-sm">
+    <div class="hero-bg">
+      <div style="width:100%;height:100%;background:linear-gradient(135deg, #052B3B 0%, #0A4D68 50%, #0F172A 100%);"></div>
+    </div>
+    <div class="hero-overlay" style="background: linear-gradient(135deg, rgba(5,43,59,0.7) 0%, rgba(10,77,104,0.5) 50%, rgba(15,23,42,0.7) 100%);"></div>
+    <div class="container">
+      <div class="hero-content fade-in-up">
+        <Breadcrumb items={[
+          { label: 'Home', href: '/' },
+          { label: 'Locations' },
+        ]} />
+        <h1>{primaryKeyword} Across 208 Connecticut Communities</h1>
+        <p class="hero-subtitle">
+          Find rapid local service near you. {businessName} maintains regional dispatch units across {state}, each staffed with licensed, insured plumbers who arrive prepared for immediate repair.
+        </p>
+        <div class="btn-group">
+          <a href={`tel:${phoneClean}`} class="btn btn-accent btn-lg" style="font-weight: 700;">
+            📞 Call 24/7: {phone}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <TrustStrip items={[
+    { icon: '🛡️', label: 'Licensed CT Plumbers' },
+    { icon: '⭐', label: `${experienceYears} Years Experience` },
+    { icon: '⏰', label: '24/7 Emergency Dispatch' },
+    { icon: '💵', label: 'Upfront Flat Rates' },
+  ]} />
+
+  <!-- All Cities Grid with Alphabetical Jump Links -->
+  <section class="section" id="all-cities">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-label">Statewide Directory</span>
+        <h2>208 Connecticut Cities & Towns We Serve</h2>
+        <p>Click on any town for local service details, common area plumbing problems, and direct 24/7 dispatch.</p>
+      </div>
+
+      <!-- Quick alphabet jump navigation -->
+      <div style="display: flex; flex-wrap: wrap; gap: 0.35rem; justify-content: center; margin-bottom: var(--space-2xl);">
+        {alphabet.map(letter => (
+          <a href={`#letter-${letter}`} style="display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; background: var(--color-bg-alt); border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-weight: 700; font-size: 0.9rem; color: var(--color-primary); text-decoration: none; transition: all 0.2s ease;">
+            {letter}
+          </a>
+        ))}
+      </div>
+
+      <!-- Towns grouped by letter -->
+      <div style="display: grid; gap: var(--space-2xl);">
+        {alphabet.map(letter => {
+          const letterCities = cities.filter(c => c.name[0].toUpperCase() === letter);
+          return (
+            <div id={`letter-${letter}`} style="background: var(--color-bg-alt); padding: var(--space-xl); border-radius: var(--radius-lg); border: 1px solid var(--color-border);">
+              <h3 style="font-size: 1.5rem; color: var(--color-primary); margin-bottom: var(--space-md); border-bottom: 2px solid var(--color-primary-light); padding-bottom: 0.35rem;">
+                {letter} ({letterCities.length} Towns)
+              </h3>
+              <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.75rem;">
+                {letterCities.map(city => (
+                  <a href={`/locations/${city.slug}/`} style="display: flex; align-items: center; justify-content: space-between; padding: 0.65rem 0.85rem; background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md); text-decoration: none; color: var(--color-text); font-weight: 500; font-size: 0.9375rem; transition: all 0.15s ease;" class="hover-lift">
+                    <span>{city.name}, CT</span>
+                    <span style="color: var(--color-accent); font-weight: 700;">→</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <!-- Service Area Map -->
+  <ServiceAreaMap />
+
+  <!-- Where We Work in State -->
+  <section class="section section-alt" id="coverage">
+    <div class="container container-narrow">
+      <div class="section-header reveal">
+        <span class="section-label">Statewide Infrastructure</span>
+        <h2>How Our Connecticut Dispatch Works</h2>
+      </div>
+
+      <div class="reveal" style="font-size: 1.05rem; line-height: 1.8;">
+        <p style="margin-bottom: var(--space-md);">
+          {businessName} operates on a decentralized mobile dispatch system across Connecticut. Instead of forcing technicians to drive across the state from a single garage during rush hour, our licensed plumbers are strategically positioned with fully stocked vans in Hartford, New Haven, Fairfield, Litchfield, Middlesex, New London, Tolland, and Windham county regions.
+        </p>
+        <p style="margin-bottom: var(--space-md);">
+          Each regional unit carries factory-certified toilet parts—including heavy-duty wax rings, cast iron and PVC closet flanges, anti-siphon fill valves, heavy-duty flappers, Kohler canister seals, and commercial flushometer diaphragms.
+        </p>
+        <p>
+          Every quote is provided upfront in writing with zero hidden mileage fees. Call our 24/7 hotline at <a href={`tel:${phoneClean}`} style="font-weight: 700; color: var(--color-accent);">{phone}</a> for immediate assistance anywhere in Connecticut.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <FAQ faqs={locationsFaqs} subtitle="Answers regarding our statewide Connecticut service coverage." />
+
+  <!-- CTA Band -->
+  <CTABand
+    title="Need Toilet Repair Anywhere in Connecticut?"
+    subtitle="Our 24/7 dispatch hotline connects you directly with an on-duty technician. Upfront flat-rate pricing guaranteed."
+    primaryCta={{ text: `📞 Call 24/7: ${phone}`, href: `tel:${phoneClean}` }}
+    secondaryCta={{ text: "View All 7 Services", href: "/services/" }}
+  />
+
+  <!-- Contact Section -->
+  <ContactSection />
+
+</BaseLayout>

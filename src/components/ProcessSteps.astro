@@ -1,0 +1,36 @@
+---
+import { processSteps } from '../data/siteConfig';
+import type { ProcessStep } from '../data/siteConfig';
+
+interface Props {
+  steps?: ProcessStep[];
+  title?: string;
+  subtitle?: string;
+}
+
+const {
+  steps = processSteps,
+  title = 'Our Simple Process',
+  subtitle = 'From your first call to the final walkthrough, here is how we work.',
+} = Astro.props;
+---
+
+<section class="section" id="process">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label">How It Works</span>
+      <h2>{title}</h2>
+      <p>{subtitle}</p>
+    </div>
+
+    <div class="process-steps">
+      {steps.map(step => (
+        <div class="process-step reveal">
+          <div class="step-number">{step.number}</div>
+          <h3>{step.title}</h3>
+          <p>{step.description}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

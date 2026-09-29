@@ -1,0 +1,171 @@
+---
+import { siteConfig, services, cities } from '../data/siteConfig';
+
+const { businessName, phone, phoneClean } = siteConfig;
+const currentPath = Astro.url.pathname;
+
+// Show featured CT cities in dropdown
+const featuredCities = cities.slice(0, 8);
+---
+
+<header class="site-header" id="site-header">
+  <div class="header-inner">
+    <!-- Logo -->
+    <a href="/" class="logo" aria-label={`${businessName} - Home`}>
+      <div class="logo-icon" style="background: var(--color-primary); color: #fff; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 8px;">🚽</div>
+      <span>{businessName}</span>
+    </a>
+
+    <!-- Desktop Navigation -->
+    <nav class="main-nav" id="main-nav" aria-label="Main navigation">
+      <div class="nav-item">
+        <a href="/" class={`nav-link ${currentPath === '/' ? 'active' : ''}`}>Home</a>
+      </div>
+
+      <!-- Services Dropdown -->
+      <div class="nav-item">
+        <span class={`nav-link nav-dropdown-trigger ${currentPath.startsWith('/services') ? 'active' : ''}`}
+              role="button"
+              aria-expanded="false"
+              aria-haspopup="true"
+              tabindex="0">
+          Services
+        </span>
+        <div class="nav-dropdown" role="menu">
+          {services.map(service => (
+            <a href={`/services/${service.slug}/`} role="menuitem">{service.name}</a>
+          ))}
+          <a href="/services/" role="menuitem" style="font-weight:600; border-top: 1px solid var(--color-border); margin-top: 0.25em; padding-top: 0.75em;">
+            All 7 Services →
+          </a>
+        </div>
+      </div>
+
+      <!-- Locations Dropdown -->
+      <div class="nav-item">
+        <span class={`nav-link nav-dropdown-trigger ${currentPath.startsWith('/locations') ? 'active' : ''}`}
+              role="button"
+              aria-expanded="false"
+              aria-haspopup="true"
+              tabindex="0">
+          Locations
+        </span>
+        <div class="nav-dropdown" role="menu">
+          {featuredCities.map(city => (
+            <a href={`/locations/${city.slug}/`} role="menuitem">{city.name}, CT</a>
+          ))}
+          <a href="/locations/" role="menuitem" style="font-weight:600; border-top: 1px solid var(--color-border); margin-top: 0.25em; padding-top: 0.75em;">
+            All 208 CT Cities →
+          </a>
+        </div>
+      </div>
+
+      <div class="nav-item">
+        <a href="/about-us/" class={`nav-link ${currentPath === '/about-us/' ? 'active' : ''}`}>About</a>
+      </div>
+
+      <div class="nav-item">
+        <a href="/blog/" class={`nav-link ${currentPath.startsWith('/blog') ? 'active' : ''}`}>Tips & Guides</a>
+      </div>
+
+      <div class="nav-item">
+        <a href="/contact-us/" class={`nav-link ${currentPath === '/contact-us/' ? 'active' : ''}`}>Contact</a>
+      </div>
+
+      <div class="header-cta">
+        <a href={`tel:${phoneClean}`} class="btn btn-accent btn-sm" style="display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 700;">
+          <span>📞</span> Call 24/7: {phone}
+        </a>
+      </div>
+    </nav>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-toggle" id="mobile-toggle" aria-label="Open mobile menu" aria-expanded="false">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+  <div class="mobile-overlay" id="mobile-overlay"></div>
+</header>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggle = document.getElementById('mobile-toggle');
+    const nav = document.getElementById('main-nav');
+    const overlay = document.getElementById('mobile-overlay');
+
+    if (!toggle || !nav || !overlay) return;
+
+    function openMenu() {
+      toggle.classList.add('active');
+      nav.classList.add('open');
+      overlay.classList.add('active');
+      toggle.setAttribute('aria-expanded', 'true');
+      toggle.setAttribute('aria-label', 'Close mobile menu');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeMenu() {
+      toggle.classList.remove('active');
+      nav.classList.remove('open');
+      overlay.classList.remove('active');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', 'Open mobile menu');
+      document.body.style.overflow = '';
+    }
+
+    toggle.addEventListener('click', () => {
+      if (nav.classList.contains('open')) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
+    });
+
+    overlay.addEventListener('click', closeMenu);
+
+    // Mobile dropdown toggles
+    const dropdownTriggers = nav.querySelectorAll('.nav-dropdown-trigger');
+    dropdownTriggers.forEach(trigger => {
+      trigger.addEventListener('click', (e) => {
+        // Only toggle on mobile
+        if (window.innerWidth <= 1024) {
+          e.preventDefault();
+          const parent = trigger.closest('.nav-item');
+          if (parent) {
+            parent.classList.toggle('dropdown-open');
+          }
+        }
+      });
+
+      // Keyboard support
+      trigger.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          trigger.click();
+        }
+      });
+    });
+
+    // Close menu on link click (mobile)
+    const navLinks = nav.querySelectorAll('a');
+    navLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth <= 1024) {
+          closeMenu();
+        }
+      });
+    });
+
+    // Close menu on resize to desktop
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 1024) {
+        closeMenu();
+        document.querySelectorAll('.nav-item.dropdown-open').forEach(item => {
+          item.classList.remove('dropdown-open');
+        });
+      }
+    });
+  });
+</script>

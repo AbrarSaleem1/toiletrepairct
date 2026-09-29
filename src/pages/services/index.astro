@@ -1,0 +1,137 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import TrustStrip from '../../components/TrustStrip.astro';
+import ProcessSteps from '../../components/ProcessSteps.astro';
+import FAQ from '../../components/FAQ.astro';
+import CTABand from '../../components/CTABand.astro';
+import ContactSection from '../../components/ContactSection.astro';
+import ServiceAreaMap from '../../components/ServiceAreaMap.astro';
+import { siteConfig, services } from '../../data/siteConfig';
+
+const { businessName, phone, phoneClean, address, primaryKeyword, experienceYears } = siteConfig;
+const state = address.state;
+
+// STRICT SEO LIMITS: Title <= 70 chars, Description <= 160 chars
+const pageTitle = `Toilet Repair Services in Connecticut | CT Toilet Repair Co.`;
+const pageDescription = `Explore professional toilet repair services by CT Toilet Repair Co. across Connecticut. Licensed plumbers, upfront flat pricing. Call (844) 352-0779.`;
+
+const servicesFaqs = [
+  { question: 'Do you offer all 7 services in every Connecticut town?', answer: `Yes. Every service listed on this page is available in all 208 cities and towns we serve across ${state}. Check our locations hub for the full coverage list.` },
+  { question: 'How do I get upfront pricing for a specific repair?', answer: `Call our 24/7 hotline at ${phone}. Describe the symptoms you are experiencing, and a licensed technician will be dispatched to evaluate the toilet on-site and present a guaranteed flat-rate quote before any work starts.` },
+  { question: 'Can you handle commercial and multi-stall facilities?', answer: 'Yes. We service commercial flushometers, high-pressure sensor toilets, and multi-stall restrooms for Connecticut restaurants, office parks, schools, and medical centers.' },
+  { question: 'What replacement parts do your plumbers carry on their trucks?', answer: 'Our mobile units carry commercial-grade flappers, anti-siphon fill valves, heavy-duty wax rings, cast iron & PVC closet flanges, stainless steel braided supply lines, and Kohler/TOTO/American Standard specialized components.' },
+  { question: 'What if I am not sure what is wrong with my toilet?', answer: `That is very common. Call our emergency desk at ${phone}. Our licensed plumbers can diagnose symptoms like ghost flushing, humming valves, or rocking bases quickly upon arrival.` },
+];
+---
+
+<BaseLayout title={pageTitle} description={pageDescription} canonicalUrl="/services/">
+
+  <!-- Hero -->
+  <section class="hero hero-sm">
+    <div class="hero-bg">
+      <div style="width:100%;height:100%;background:linear-gradient(135deg, #052B3B 0%, #0A4D68 50%, #0F172A 100%);"></div>
+    </div>
+    <div class="hero-overlay" style="background: linear-gradient(135deg, rgba(5,43,59,0.7) 0%, rgba(10,77,104,0.5) 50%, rgba(15,23,42,0.7) 100%);"></div>
+    <div class="container">
+      <div class="hero-content fade-in-up">
+        <Breadcrumb items={[
+          { label: 'Home', href: '/' },
+          { label: 'Services' },
+        ]} />
+        <h1>{primaryKeyword} Services in {state}</h1>
+        <p class="hero-subtitle">
+          {businessName} offers specialized residential and commercial {primaryKeyword} solutions across all 208 Connecticut towns. Fully licensed plumbers, transparent flat-rate pricing, and written warranties.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <TrustStrip items={[
+    { icon: '🛡️', label: 'Licensed CT Plumbers' },
+    { icon: '⭐', label: `${experienceYears} Years Experience` },
+    { icon: '⏰', label: '24/7 Emergency Dispatch' },
+    { icon: '💵', label: 'Upfront Flat-Rate Quotes' },
+  ]} />
+
+  <!-- Services Grid -->
+  <section class="section" id="all-services">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-label">What We Do</span>
+        <h2>Complete {primaryKeyword} Solutions</h2>
+        <p>Every service below is performed by licensed professionals across all 208 Connecticut communities. Select any service to view full technical details.</p>
+      </div>
+
+      <div class="services-grid">
+        {services.map(service => (
+          <a href={`/services/${service.slug}/`} class="card service-card reveal" style="text-decoration:none;">
+            <div class="card-icon">{service.icon}</div>
+            <h3>{service.name}</h3>
+            <p>{service.shortDescription}</p>
+            <div style="margin-top: var(--space-sm); font-size: 0.8125rem; font-weight: 600; color: var(--color-primary);">
+              {service.priceRange}
+            </div>
+            <span class="card-link" style="margin-top: var(--space-md);">
+              View Repair Scope <span aria-hidden="true">→</span>
+            </span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Process -->
+  <ProcessSteps />
+
+  <!-- Why Choose Us -->
+  <section class="section section-alt" id="why-us">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-label">Why Us</span>
+        <h2>Why Connecticut Property Owners Choose Our Plumbers</h2>
+      </div>
+      <div class="why-grid">
+        <div class="why-item reveal">
+          <div class="why-icon">🏆</div>
+          <h3>Licensed Statewide</h3>
+          <p>Our team holds all required {state} plumbing licenses and stays current on international plumbing codes and local municipal regulations.</p>
+        </div>
+        <div class="why-item reveal">
+          <div class="why-icon">💰</div>
+          <h3>Upfront Flat Pricing</h3>
+          <p>You see the exact price in writing before any tool touches your toilet. No unexpected travel fees, no surprises.</p>
+        </div>
+        <div class="why-item reveal">
+          <div class="why-icon">⚡</div>
+          <h3>Fully Stocked Vans</h3>
+          <p>We stock factory-certified parts for Kohler, American Standard, TOTO, and Sloan to ensure repairs finish on the first visit.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Coverage Map -->
+  <ServiceAreaMap
+    badge="Coverage Map"
+    title="Statewide Connecticut Service Area"
+    subtitle={`Our licensed plumbers provide comprehensive toilet repairs and 24/7 emergency dispatch across all 208 Connecticut towns.`}
+    query="Connecticut, USA"
+    zoom={8}
+  />
+
+  <!-- FAQ -->
+  <FAQ faqs={servicesFaqs} subtitle={`Common questions regarding our ${primaryKeyword} capabilities in ${state}.`} />
+
+  <!-- CTA Band -->
+  <CTABand
+    title={`Need Immediate ${primaryKeyword} in ${state}?`}
+    subtitle="Our Connecticut dispatchers are available 24/7. Call right now for rapid local service."
+    primaryCta={{ text: `📞 Call 24/7: ${phone}`, href: `tel:${phoneClean}` }}
+    secondaryCta={{ text: "View All 208 Towns", href: "/locations/" }}
+  />
+
+  <!-- Contact Section -->
+  <ContactSection />
+
+</BaseLayout>

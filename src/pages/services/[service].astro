@@ -1,0 +1,349 @@
+---
+/**
+ * SERVICE PAGE TEMPLATE
+ * Generates a page for each of the 7 toilet repair services.
+ * Covers the entire state of Connecticut.
+ */
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import TrustStrip from '../../components/TrustStrip.astro';
+import ProcessSteps from '../../components/ProcessSteps.astro';
+import Testimonials from '../../components/Testimonials.astro';
+import FAQ from '../../components/FAQ.astro';
+import CTABand from '../../components/CTABand.astro';
+import ContactSection from '../../components/ContactSection.astro';
+import ServiceAreaMap from '../../components/ServiceAreaMap.astro';
+import { siteConfig, services, cities } from '../../data/siteConfig';
+
+export function getStaticPaths() {
+  return services.map(service => ({
+    params: { service: service.slug },
+    props: { service },
+  }));
+}
+
+const { service } = Astro.props;
+const { businessName, phone, phoneClean, address, primaryKeyword, experienceYears } = siteConfig;
+const state = address.state;
+
+// STRICT SEO LIMITS: Title <= 70 chars, Description <= 160 chars
+const pageTitle = `${service.name} in CT | 24/7 CT Toilet Repair Co.`;
+const pageDescription = `Expert ${service.name.toLowerCase()} in Connecticut. 24/7 emergency dispatch, licensed plumbers, and upfront flat rates. Call ${phone} now.`;
+
+// Get related services
+const relatedServices = services.filter(s => s.slug !== service.slug).slice(0, 3);
+
+// Service-specific warning signs generator
+const warningSigns = [
+  { icon: '⚠️', title: 'Recurring Symptoms', desc: `If your toilet repeatedly suffers from ${service.name.toLowerCase()}, underlying pipe obstruction or worn internal components are usually to blame.` },
+  { icon: '💧', title: 'Water Escaping or Rising', desc: 'Moisture pooling around closet bolts or water level rising toward the rim warrants immediate professional intervention.' },
+  { icon: '🔊', title: 'Unusual Noises & Hissing', desc: 'Continuous trickling, whistling fill valves, or loud shuddering pipes point to failed seal gaskets or high water pressure.' },
+  { icon: '📈', title: 'Unexplained Water Bill Spikes', desc: 'A silent internal leak can waste over 6,000 gallons per month without visible puddle signs on your bathroom floor.' },
+];
+
+// Featured Connecticut service cities for reciprocal internal linking
+const popularSlugs = ['bridgeport', 'new-haven', 'stamford', 'hartford', 'danbury', 'norwalk', 'new-britain', 'bristol', 'meriden', 'milford'];
+const featuredCities = cities.filter(c => popularSlugs.includes(c.slug));
+
+// 100% Content-relevant plumbing images (NO vehicles, NO human faces)
+const serviceImages: Record<string, { primary: string; secondary: string; primaryAlt: string; secondaryAlt: string }> = {
+  'clogged-toilet-unclogging': {
+    primary: '/images/clogged-toilet-plumbing-auger.jpg',
+    secondary: '/images/toilet-flange-wax-ring-repair.jpg',
+    primaryAlt: 'Professional drop-head toilet auger clearing stubborn clogs in Connecticut',
+    secondaryAlt: 'Clean toilet closet flange assembly ensuring clear drain path',
+  },
+  'toilet-leak-repair': {
+    primary: '/images/toilet-water-supply-shutoff-valve.jpg',
+    secondary: '/images/toilet-flange-wax-ring-repair.jpg',
+    primaryAlt: 'Braided stainless steel toilet water supply line and chrome shutoff valve leak repair',
+    secondaryAlt: 'Toilet wax ring and closet flange leak prevention hardware',
+  },
+  'running-toilet-repair': {
+    primary: '/images/toilet-tank-fill-valve-replacement.jpg',
+    secondary: '/images/toilet-water-supply-shutoff-valve.jpg',
+    primaryAlt: 'Toilet tank interior with anti-siphon fill valve and silicone flapper mechanism',
+    secondaryAlt: 'Quarter-turn toilet shutoff valve inspection and water regulation',
+  },
+  'flapper-and-fill-valve-replacement': {
+    primary: '/images/toilet-tank-fill-valve-replacement.jpg',
+    secondary: '/images/toilet-water-supply-shutoff-valve.jpg',
+    primaryAlt: 'New fluidmaster fill valve and chemical-resistant flapper replacement inside toilet tank',
+    secondaryAlt: 'Precision toilet water inlet line and emergency isolation stop valve',
+  },
+  'emergency-toilet-repair': {
+    primary: '/images/clogged-toilet-plumbing-auger.jpg',
+    secondary: '/images/toilet-flange-wax-ring-repair.jpg',
+    primaryAlt: 'Emergency 24/7 toilet unclogging auger equipment ready for rapid dispatch',
+    secondaryAlt: 'Heavy-duty closet flange repair parts to fix emergency toilet base leaks',
+  },
+  'flange-repair': {
+    primary: '/images/toilet-flange-wax-ring-repair.jpg',
+    secondary: '/images/toilet-water-supply-shutoff-valve.jpg',
+    primaryAlt: 'Heavy-duty closet flange and reinforced wax gasket to fix wobbly rocking toilets',
+    secondaryAlt: 'Water supply line connection aligned to freshly installed toilet flange',
+  },
+  'commercial-toilet-repair': {
+    primary: '/images/commercial-toilet-flushometer-valve.jpg',
+    secondary: '/images/toilet-flange-wax-ring-repair.jpg',
+    primaryAlt: 'Commercial Sloan flushometer valve installed on vitreous china toilet bowl',
+    secondaryAlt: 'Commercial toilet mounting hardware and high-capacity carrier seals',
+  },
+};
+
+const currentImgs = serviceImages[service.slug] || {
+  primary: '/images/toilet-tank-fill-valve-replacement.jpg',
+  secondary: '/images/clogged-toilet-plumbing-auger.jpg',
+  primaryAlt: `${service.name} in Connecticut - CT Toilet Repair Co.`,
+  secondaryAlt: `Professional toilet repair equipment and parts in Connecticut`,
+};
+
+// Service FAQs without free estimates
+const serviceFaqs = [
+  { question: `What is included in your ${service.name.toLowerCase()} service?`, answer: `Our licensed Connecticut plumbers perform a complete physical diagnostic, dismantle affected components safely, install heavy-duty commercial parts, and conduct dual high-pressure test flushes.` },
+  { question: `How much does ${service.name.toLowerCase()} cost in Connecticut?`, answer: `We provide clear, upfront flat-rate quotes before any repair begins. Our technician explains the required parts and exact labor on-site so there are never any surprises on your bill.` },
+  { question: `Is ${service.name} available 24/7 across Connecticut?`, answer: `Yes. Whether it is 2 PM on a Tuesday or 3 AM on a holiday weekend, our emergency response trucks are fully stocked and dispatched immediately across all 208 CT towns.` },
+  { question: `Do you provide a written warranty on this repair?`, answer: `Yes. All parts and craftsmanship come backed by our written warranty. If the repair fails or leaks during the warranty window, we return promptly to make it right.` },
+  { question: `How do I schedule immediate ${service.name.toLowerCase()}?`, answer: `Simply call our 24/7 hotline at ${phone}. A live Connecticut dispatcher will record your address, assign the nearest technician, and provide you with an arrival time window.` },
+];
+
+// Service schema
+const serviceSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": service.name,
+  "description": service.shortDescription,
+  "provider": {
+    "@type": "PlumbingService",
+    "name": businessName,
+    "telephone": phone,
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": address.street,
+      "addressLocality": address.city,
+      "addressRegion": address.stateAbbr,
+      "postalCode": address.zip,
+      "addressCountry": "US",
+    },
+  },
+  "areaServed": {
+    "@type": "State",
+    "name": state,
+  },
+});
+---
+
+<BaseLayout title={pageTitle} description={pageDescription} canonicalUrl={`/services/${service.slug}/`} schema={serviceSchema}>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero hero-sm">
+    <div class="hero-bg">
+      <div style="width:100%;height:100%;background:linear-gradient(135deg, #052B3B 0%, #0A4D68 50%, #0F172A 100%);"></div>
+    </div>
+    <div class="hero-overlay" style="background: linear-gradient(135deg, rgba(5,43,59,0.7) 0%, rgba(10,77,104,0.5) 50%, rgba(15,23,42,0.7) 100%);"></div>
+    <div class="container">
+      <div class="hero-grid fade-in-up">
+        <div class="hero-content">
+          <Breadcrumb items={[
+            { label: 'Home', href: '/' },
+            { label: 'Services', href: '/services/' },
+            { label: service.name },
+          ]} />
+          <h1>{service.name} in <span class="highlight">{state}</span></h1>
+          <p class="hero-subtitle">
+            {businessName} provides Connecticut property owners with licensed specialists who arrive with fully stocked trucks to diagnose and complete {service.name.toLowerCase()} on the first visit. We deliver 24/7 emergency response — same-day service, upfront flat-rate pricing, and guaranteed leak-free performance across all 208 CT towns.
+          </p>
+          <div class="btn-group">
+            <a href={`tel:${phoneClean}`} class="btn btn-accent btn-lg" style="font-weight: 700;">
+              📞 Call 24/7: {phone}
+            </a>
+            <a href="/locations/" class="btn btn-white btn-lg">
+              View All 208 CT Cities
+            </a>
+          </div>
+        </div>
+
+        <!-- Hero Media Card (Furnace Repair Pros style) -->
+        <div class="hero-media">
+          <div class="hero-card-frame">
+            <img 
+              src={currentImgs.primary} 
+              alt={currentImgs.primaryAlt} 
+              width="900" 
+              height="650" 
+              class="hero-main-img" 
+              loading="eager" 
+              decoding="async"
+            />
+            <div class="hero-same-day-badge">
+              <span>⚡</span>
+              <span>Same-Day {service.name}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <TrustStrip items={[
+    { icon: '🛡️', label: 'Licensed CT Plumbers' },
+    { icon: '⭐', label: `${experienceYears} Years Experience` },
+    { icon: '⏰', label: '24/7 Rapid Dispatch' },
+    { icon: '💵', label: 'Upfront Flat Rates' },
+  ]} />
+
+  <!-- ============ SERVICE SCOPE & OVERVIEW ============ -->
+  <section class="section" id="scope">
+    <div class="container container-narrow">
+      <div class="reveal">
+        <span class="section-label">Service Scope</span>
+        <h2>Professional {service.name} Across Connecticut</h2>
+        <p style="font-size: 1.125rem; line-height: 1.7; margin-bottom: var(--space-lg);">
+          {service.details}
+        </p>
+        <p style="font-size: 1.05rem; line-height: 1.7; color: var(--color-text-light);">
+          Whether your toilet issue is a sudden emergency or a nagging daily frustration, attempting amateur DIY fixes often leads to cracked porcelain, improper wax compression, or ruined bathroom subflooring. Our certified plumbers carry commercial diagnostic cameras, heavy-duty drop-head augers, and replacement kits engineered to restore original factory performance.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PROCESS ============ -->
+  <ProcessSteps />
+
+  <!-- ============ WARNING SIGNS ============ -->
+  <section class="section section-alt" id="warning-signs">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-label">Troubleshooting</span>
+        <h2>Common Signs You Need {service.name}</h2>
+        <p>Catching these symptoms early saves hundreds of dollars in water bills and structural repairs.</p>
+      </div>
+
+      <div class="problems-grid">
+        {warningSigns.map(sign => (
+          <div class="problem-item reveal">
+            <div class="problem-icon">{sign.icon}</div>
+            <div>
+              <h4>{sign.title}</h4>
+              <p>{sign.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Service Secondary Image (NO vehicles, NO faces) -->
+      <figure style="margin: var(--space-xl) auto 0; max-width: 800px; border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid var(--color-border); background: var(--color-bg);">
+        <img 
+          src={currentImgs.secondary} 
+          alt={currentImgs.secondaryAlt} 
+          width="800" 
+          height="450" 
+          loading="lazy" 
+          decoding="async" 
+          style="width: 100%; height: auto; max-height: 440px; display: block; object-fit: cover;"
+        />
+        <figcaption style="padding: 0.75rem 1rem; font-size: 0.875rem; color: var(--color-text-light); background: var(--color-bg-alt); border-top: 1px solid var(--color-border); font-style: italic;">
+          🔧 {currentImgs.secondaryAlt}
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ PRICING ============ -->
+  <section class="section" id="pricing">
+    <div class="container">
+      <div class="pricing-box reveal">
+        <div class="pricing-badge">💵 Upfront Pricing Guarantee</div>
+        <h2>Guaranteed Flat Rates for {service.name}</h2>
+        <p style="max-width: 650px; margin-inline: auto; color: var(--color-text-light);">
+          Every {service.name.toLowerCase()} job begins with an in-person diagnostic by a licensed Connecticut plumber. We clearly explain what parts are needed and give you an exact price before starting.
+        </p>
+        <div class="pricing-features">
+          <div class="pricing-feature"><span style="color: var(--color-success); font-weight: 700;">✓</span> Upfront Flat-Rate Quote</div>
+          <div class="pricing-feature"><span style="color: var(--color-success); font-weight: 700;">✓</span> Commercial-Grade Replacement Parts</div>
+          <div class="pricing-feature"><span style="color: var(--color-success); font-weight: 700;">✓</span> Zero Hidden Travel Fees</div>
+          <div class="pricing-feature"><span style="color: var(--color-success); font-weight: 700;">✓</span> Complete Written Workmanship Warranty</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ REVIEWS ============ -->
+  <Testimonials title={`${service.name} Customer Reviews`} subtitle={`See what homeowners across Connecticut say about our ${service.name.toLowerCase()} work.`} />
+
+  <!-- ============ FAQ ============ -->
+  <FAQ faqs={serviceFaqs} title={`${service.name} FAQs`} subtitle={`Frequently asked questions about ${service.name.toLowerCase()} in Connecticut.`} />
+
+  <!-- ============ RELATED SERVICES ============ -->
+  <section class="section section-alt" id="related">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-label">Additional Services</span>
+        <h2>Other Toilet Repair Solutions We Offer</h2>
+        <p>Combine services during the same visit for comprehensive bathroom care.</p>
+      </div>
+
+      <div class="services-grid" style="max-width: 1000px; margin-inline: auto;">
+        {relatedServices.map(related => (
+          <a href={`/services/${related.slug}/`} class="card service-card reveal" style="text-decoration:none;">
+            <div class="card-icon">{related.icon}</div>
+            <h3>{related.name}</h3>
+            <p>{related.shortDescription}</p>
+            <span class="card-link">View Details <span aria-hidden="true">→</span></span>
+          </a>
+        ))}
+      </div>
+
+      <div style="text-align:center; margin-top: var(--space-2xl);">
+        <a href="/services/" class="btn btn-outline">Explore All 7 Services</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LOCAL CT SERVICE AREAS ============ -->
+  <section class="section" id="service-areas">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-label">Local Dispatch</span>
+        <h2>{service.name} Available in All 208 Connecticut Cities</h2>
+        <p>Our licensed plumbers deliver same-day {service.name.toLowerCase()} in every Connecticut community, including:</p>
+      </div>
+
+      <div class="nearby-cities" style="justify-content:center; max-width: 1000px; margin-inline: auto;">
+        {featuredCities.map(c => (
+          <a href={`/locations/${c.slug}/`} class="nearby-city-card reveal">
+            <h4>{c.name}, CT</h4>
+            <p>24/7 {service.name}</p>
+          </a>
+        ))}
+      </div>
+
+      <div style="text-align:center; margin-top: var(--space-xl);">
+        <a href="/locations/" class="btn btn-outline">Explore All 208 Connecticut Cities & Towns →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ COVERAGE MAP ============ -->
+  <ServiceAreaMap
+    badge="Coverage Map"
+    title={`${service.name} Statewide Service Area`}
+    subtitle={`Immediate 24/7 emergency dispatch for ${service.name.toLowerCase()} across all 208 Connecticut municipalities.`}
+    query="Connecticut, USA"
+    zoom={8}
+  />
+
+  <!-- ============ CTA BAND ============ -->
+  <CTABand
+    title={`Ready for ${service.name} in Connecticut?`}
+    subtitle="Speak directly with an on-duty technician right now. Upfront pricing and prompt local arrival."
+    primaryCta={{ text: `📞 Call 24/7: ${phone}`, href: `tel:${phoneClean}` }}
+    secondaryCta={{ text: "View All 208 CT Cities", href: "/locations/" }}
+  />
+
+  <!-- ============ CONTACT ============ -->
+  <ContactSection />
+
+</BaseLayout>

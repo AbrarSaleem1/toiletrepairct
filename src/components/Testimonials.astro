@@ -1,0 +1,73 @@
+---
+import { testimonials } from '../data/siteConfig';
+import type { Testimonial } from '../data/siteConfig';
+
+interface Props {
+  items?: Testimonial[];
+  title?: string;
+  subtitle?: string;
+}
+
+const {
+  items = testimonials,
+  title = 'What Our Customers Say',
+  subtitle = 'Real feedback from homeowners and businesses across the state.',
+} = Astro.props;
+
+function getInitials(name: string): string {
+  return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+}
+
+// AggregateRating schema
+const avgRating = items.reduce((sum, t) => sum + t.rating, 0) / items.length;
+const reviewSchema = {
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": avgRating.toFixed(1),
+    "reviewCount": String(items.length),
+    "bestRating": "5",
+    "worstRating": "1",
+  },
+  "review": items.map(t => ({
+    "@type": "Review",
+    "author": { "@type": "Person", "name": t.name },
+    "reviewRating": { "@type": "Rating", "ratingValue": String(t.rating), "bestRating": "5" },
+    "reviewBody": t.text,
+    "datePublished": t.date,
+  })),
+};
+---
+
+<section class="section section-alt" id="testimonials">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label">Reviews</span>
+      <h2>{title}</h2>
+      <p>{subtitle}</p>
+    </div>
+
+    <div class="testimonials-grid">
+      {items.map(testimonial => (
+        <div class="testimonial-card reveal">
+          <div class="testimonial-stars">
+            {Array.from({ length: testimonial.rating }).map(() => (
+              <span>★</span>
+            ))}
+          </div>
+          <p class="testimonial-text">{testimonial.text}</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">{getInitials(testimonial.name)}</div>
+            <div>
+              <div class="testimonial-name">{testimonial.name}</div>
+              <div class="testimonial-location">{testimonial.location}</div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script type="application/ld+json" set:html={JSON.stringify(reviewSchema)} />

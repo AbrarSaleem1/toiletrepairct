@@ -1,0 +1,99 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import CTABand from '../../components/CTABand.astro';
+import { siteConfig } from '../../data/siteConfig';
+
+const { businessName, phone, phoneClean, address, primaryKeyword } = siteConfig;
+const state = address.state;
+
+// STRICT SEO LIMITS: Title <= 70 chars, Description <= 160 chars
+const pageTitle = `Toilet Repair Guides & Plumbing Tips | CT Toilet Repair Co.`;
+const pageDescription = `Helpful Connecticut toilet repair tips, DIY warning signs, and professional plumbing advice from CT Toilet Repair Co. Call (844) 352-0779.`;
+
+const blogPosts = [
+  {
+    slug: 'signs-toilet-flange-broken',
+    title: '5 Warning Signs Your Toilet Flange or Wax Ring Is Failing',
+    excerpt: 'Learn how to detect hairline wax ring leaks, wobbly bases, and damaged subfloors before mold and structural floor rot take over your bathroom.',
+    date: '2026-08-20',
+    category: 'Diagnostics',
+  },
+  {
+    slug: 'stop-running-toilet-save-water',
+    title: 'How to Fix a Constantly Running Toilet & Lower Utility Bills',
+    excerpt: 'A toilet that runs intermittently or trickles non-stop wastes up to 200 gallons daily. Here is what causes flush valve and flapper failure.',
+    date: '2026-07-15',
+    category: 'Maintenance',
+  },
+  {
+    slug: 'plunger-vs-toilet-auger-guide',
+    title: 'Plunger vs. Closet Auger: Safe Unclogging Without Scratches',
+    excerpt: 'Using the wrong clearing tool can crack your toilet trapway or damage vitreous china. See when plunging works and when motorized snaking is required.',
+    date: '2026-06-05',
+    category: 'How-To',
+  },
+];
+---
+
+<BaseLayout title={pageTitle} description={pageDescription} canonicalUrl="/blog/">
+
+  <!-- Hero -->
+  <section class="hero hero-sm">
+    <div class="hero-bg">
+      <div style="width:100%;height:100%;background:linear-gradient(135deg, #052B3B 0%, #0A4D68 50%, #0F172A 100%);"></div>
+    </div>
+    <div class="hero-overlay" style="background: linear-gradient(135deg, rgba(5,43,59,0.7) 0%, rgba(10,77,104,0.5) 50%, rgba(15,23,42,0.7) 100%);"></div>
+    <div class="container">
+      <div class="hero-content fade-in-up">
+        <Breadcrumb items={[
+          { label: 'Home', href: '/' },
+          { label: 'Tips & Guides' },
+        ]} />
+        <h1>{primaryKeyword} Guides & Expert Tips</h1>
+        <p class="hero-subtitle">
+          Practical advice, troubleshooting checklists, and professional plumbing insight from the licensed team at {businessName}.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Blog Grid -->
+  <section class="section" id="blog-posts">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-label">Homeowner Knowledge</span>
+        <h2>Toilet Troubleshooting & Maintenance Articles</h2>
+        <p>Expert articles on toilet mechanisms, leak prevention, and Connecticut plumbing standards.</p>
+      </div>
+
+      <div class="blog-grid">
+        {blogPosts.map(post => (
+          <article class="blog-card reveal">
+            <div class="blog-card-image" style="background: var(--color-bg-alt); display:flex; align-items:center; justify-content:center; border-bottom: 1px solid var(--color-border); padding: var(--space-xl);">
+              <span style="font-size: 2.5rem;">🚽</span>
+            </div>
+            <div class="blog-card-body">
+              <p class="blog-card-meta">{post.date} · {post.category}</p>
+              <h3>{post.title}</h3>
+              <p>{post.excerpt}</p>
+              <div style="margin-top: var(--space-md);">
+                <a href={`tel:${phoneClean}`} class="card-link" style="color: var(--color-primary); font-weight: 700;">
+                  Need Help? Call Our 24/7 Hotline →
+                </a>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CTABand
+    title="Dealing with a Difficult Toilet Breakdown?"
+    subtitle="Our Connecticut dispatch team is ready 24/7. Speak directly with a licensed technician right now."
+    primaryCta={{ text: `📞 Call 24/7: ${phone}`, href: `tel:${phoneClean}` }}
+    secondaryCta={{ text: "View All 7 Services", href: "/services/" }}
+  />
+
+</BaseLayout>

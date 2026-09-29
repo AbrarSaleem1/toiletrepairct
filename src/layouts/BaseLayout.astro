@@ -1,0 +1,124 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  canonicalUrl?: string;
+  ogImage?: string;
+  schema?: string;
+  noIndex?: boolean;
+}
+
+const {
+  title,
+  description,
+  canonicalUrl,
+  ogImage = '/images/og-default.jpg',
+  schema,
+  noIndex = false,
+} = Astro.props;
+
+import { siteConfig } from '../data/siteConfig';
+const { businessName, domain, phone } = siteConfig;
+const fullCanonical = canonicalUrl ? `${domain}${canonicalUrl}` : domain;
+const currentYear = new Date().getFullYear();
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  {noIndex && <meta name="robots" content="noindex, nofollow" />}
+  <link rel="canonical" href={fullCanonical} />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content={fullCanonical} />
+  <meta property="og:image" content={`${domain}${ogImage}`} />
+  <meta property="og:site_name" content={businessName} />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={`${domain}${ogImage}`} />
+
+  <!-- Organization Schema -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": businessName,
+    "url": domain,
+    "logo": `${domain}/images/logo.png`,
+    "telephone": phone,
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": siteConfig.address.street,
+      "addressLocality": siteConfig.address.city,
+      "addressRegion": siteConfig.address.stateAbbr,
+      "postalCode": siteConfig.address.zip,
+      "addressCountry": "US",
+    },
+    "sameAs": Object.values(siteConfig.social).filter(Boolean),
+  })} />
+
+  <!-- Page-specific Schema -->
+  {schema && <script type="application/ld+json" set:html={schema} />}
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <Header />
+  <main id="main-content">
+    <slot />
+  </main>
+  <Footer />
+
+  <!-- Scroll Reveal Animation -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Scroll reveal
+      const reveals = document.querySelectorAll('.reveal');
+      if (reveals.length > 0) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+        reveals.forEach(el => observer.observe(el));
+      }
+
+      // Header scroll effect
+      const header = document.querySelector('.site-header');
+      if (header) {
+        window.addEventListener('scroll', () => {
+          if (window.scrollY > 50) {
+            header.classList.add('scrolled');
+          } else {
+            header.classList.remove('scrolled');
+          }
+        }, { passive: true });
+      }
+    });
+  </script>
+</body>
+</html>
