@@ -17,27 +17,6 @@ const {
 function getInitials(name: string): string {
   return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 }
-
-// AggregateRating schema
-const avgRating = items.reduce((sum, t) => sum + t.rating, 0) / items.length;
-const reviewSchema = {
-  "@context": "https://schema.org",
-  "@type": "LocalBusiness",
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": avgRating.toFixed(1),
-    "reviewCount": String(items.length),
-    "bestRating": "5",
-    "worstRating": "1",
-  },
-  "review": items.map(t => ({
-    "@type": "Review",
-    "author": { "@type": "Person", "name": t.name },
-    "reviewRating": { "@type": "Rating", "ratingValue": String(t.rating), "bestRating": "5" },
-    "reviewBody": t.text,
-    "datePublished": t.date,
-  })),
-};
 ---
 
 <section class="section section-alt" id="testimonials">
@@ -69,5 +48,3 @@ const reviewSchema = {
     </div>
   </div>
 </section>
-
-<script type="application/ld+json" set:html={JSON.stringify(reviewSchema)} />
